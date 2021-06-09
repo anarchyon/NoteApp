@@ -2,9 +2,11 @@ package learn.geekbrains.noteapp;
 
 import android.os.Bundle;
 
+import androidx.annotation.Nullable;
 import androidx.appcompat.widget.LinearLayoutCompat;
 import androidx.fragment.app.Fragment;
 
+import android.os.Parcelable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,6 +21,14 @@ public class ListNotesFragment extends Fragment {
     private List<Note> notes;
 
     public ListNotesFragment() {
+    }
+
+    public static ListNotesFragment newInstance(List<Note> notes) {
+        ListNotesFragment listNotesFragment = new ListNotesFragment();
+        Bundle args = new Bundle();
+        args.putParcelableArrayList(ARG_NOTES, (ArrayList<? extends Parcelable>) notes);
+        listNotesFragment.setArguments(args);
+        return listNotesFragment;
     }
 
     @Override
@@ -38,19 +48,18 @@ public class ListNotesFragment extends Fragment {
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        prepareNotes();
+//        prepareNotes();
         initList(view);
     }
 
-    private void prepareNotes() {
-        notes = new ArrayList<>();
-        for (int i = 0; i < 10; i++) {
-            String name = getResources().getString(R.string.header) + (i + 1);
-            String text = getResources().getString(R.string.text) + (i + 1);
-            notes.add(new Note(name, text));
-        }
-
-    }
+//    private void prepareNotes() {
+//        notes = new ArrayList<>();
+//        for (int i = 0; i < 10; i++) {
+//            String name = getResources().getString(R.string.header) + (i + 1);
+//            String text = getResources().getString(R.string.text) + (i + 1);
+//            notes.add(new Note(name, text));
+//        }
+//    }
 
     private void initList(View view) {
         LinearLayoutCompat linearLayoutCompat = (LinearLayoutCompat) view;
