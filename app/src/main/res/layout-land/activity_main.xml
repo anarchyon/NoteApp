@@ -14,13 +14,18 @@
         <androidx.fragment.app.FragmentContainerView
             android:id="@+id/fragment_container"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"/>
+            android:layout_height="wrap_content" />
     </ScrollView>
 
-    <androidx.fragment.app.FragmentContainerView
-        android:id="@+id/fragment_note_details"
+    <ScrollView
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
-        android:layout_weight="1" />
+        android:layout_weight="1">
+
+        <androidx.fragment.app.FragmentContainerView
+            android:id="@+id/fragment_note_details"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+    </ScrollView>
 
 </androidx.appcompat.widget.LinearLayoutCompat>
