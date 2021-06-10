@@ -9,9 +9,12 @@
     <string name="important">Важные заметки</string>
     <string name="home">Главная</string>
     <string name="settings">Настройки</string>
-    <string name="exit">Выход</string>
     <string name="modify">Изменить</string>
     <string name="add_to_important">В важные</string>
     <string name="delete">Удалить</string>
     <string name="about">О приложении</string>
+    <string name="drawer_menu_username">Имя пользователя</string>
+    <string name="drawer_menu_user_email">Адрес электронной почты</string>
+    <string name="nav_drawer_open">Где</string>
+    <string name="nav_drawer_close">Закрыто</string>
 </resources>
