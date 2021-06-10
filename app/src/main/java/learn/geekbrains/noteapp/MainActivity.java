@@ -1,6 +1,5 @@
 package learn.geekbrains.noteapp;
 
-import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.os.Parcelable;
@@ -8,12 +7,15 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
 
+import com.google.android.material.navigation.NavigationView;
+
 import java.util.ArrayList;
 import java.util.List;
 
-import androidx.annotation.NonNull;
+import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.FragmentManager;
 
 public class MainActivity extends AppCompatActivity implements ListNotesFragment.Controller, NoteFragment.Controller {
@@ -26,8 +28,15 @@ public class MainActivity extends AppCompatActivity implements ListNotesFragment
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        initToolbar();
 
+        initToolbarAndNavigationDrawer();
+        loadStates(savedInstanceState);
+        initListNotes();
+
+        if (note != null) showNote();
+    }
+
+    private void loadStates(Bundle savedInstanceState) {
         if (savedInstanceState != null) {
             notes = savedInstanceState.getParcelableArrayList(KEY_LIST_NOTES);
             note = savedInstanceState.getParcelable(KEY_NOTE);
@@ -36,9 +45,6 @@ public class MainActivity extends AppCompatActivity implements ListNotesFragment
         if (notes == null) {
             notes = TemporaryClassNotes.getNotes();
         }
-
-        initListNotes();
-        if (note != null) showNote();
     }
 
     private void initListNotes() {
@@ -49,9 +55,32 @@ public class MainActivity extends AppCompatActivity implements ListNotesFragment
                 .commit();
     }
 
-    private void initToolbar() {
+    private void initToolbarAndNavigationDrawer() {
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+        DrawerLayout drawerLayout = findViewById(R.id.drawer_menu);
+        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawerLayout, toolbar, R.string.nav_drawer_open, R.string.nav_drawer_close);
+        drawerLayout.addDrawerListener(toggle);
+        toggle.syncState();
+
+        addListenerToNavigationDrawer();
+    }
+
+    private void addListenerToNavigationDrawer() {
+        NavigationView navigationView = findViewById(R.id.nav_view);
+        navigationView.setNavigationItemSelectedListener(item -> {
+            int itemId = item.getItemId();
+            if (itemId == R.id.nav_menu_home) {
+                Toast.makeText(this, "главная страница", Toast.LENGTH_LONG).show();
+            } else if (itemId == R.id.nav_menu_about) {
+                Toast.makeText(this, "о приложении", Toast.LENGTH_LONG).show();
+            } else if (itemId == R.id.menu_settings) {
+                Toast.makeText(this, "окно настроек", Toast.LENGTH_LONG).show();
+            } else if (itemId == R.id.menu_important) {
+                Toast.makeText(this, "открыть список важных заметок", Toast.LENGTH_LONG).show();
+            }
+            return true;
+        });
     }
 
     @Override
