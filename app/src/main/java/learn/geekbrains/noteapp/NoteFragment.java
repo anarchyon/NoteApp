@@ -56,4 +56,8 @@ public class NoteFragment extends Fragment {
 
         super.onViewCreated(view, savedInstanceState);
     }
+
+    public interface Controller {
+        void saveNote(Note note);
+    }
 }
