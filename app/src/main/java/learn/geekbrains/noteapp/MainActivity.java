@@ -18,7 +18,7 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.FragmentManager;
 
-public class MainActivity extends AppCompatActivity implements ListNotesFragment.Controller, NoteFragment.Controller {
+public class MainActivity extends AppCompatActivity implements ListNotesFragment.Contract, NoteFragment.Controller {
     public static final String KEY_NOTE = "key_note";
     private static final String KEY_LIST_NOTES = "key_list_notes";
     private List<Note> notes;
@@ -112,7 +112,7 @@ public class MainActivity extends AppCompatActivity implements ListNotesFragment
     }
 
     @Override
-    public void getNote(Note note) {
+    public void getNoteAndShow(Note note) {
         this.note = note;
         showNote();
     }
@@ -141,5 +141,11 @@ public class MainActivity extends AppCompatActivity implements ListNotesFragment
     @Override
     public void saveNote(Note note) {
         // TODO: 09.06.2021
+    }
+
+    @Override
+    public void onBackPressed() {
+        note = null;
+        super.onBackPressed();
     }
 }

@@ -5,13 +5,13 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     tools:context=".NoteFragment"
-    android:background="@color/white">
+    android:padding="@dimen/normal_padding">
 
     <androidx.appcompat.widget.AppCompatTextView
         android:id="@+id/header"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:textSize="35sp"
+        android:textSize="@dimen/shown_note_header_text_size"
         android:textStyle="bold"
         android:text="" />
 
@@ -23,7 +23,7 @@
 
     <androidx.appcompat.widget.AppCompatTextView
         android:id="@+id/text"
-        android:textSize="25sp"
+        android:textSize="@dimen/shown_note_text_size"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
 

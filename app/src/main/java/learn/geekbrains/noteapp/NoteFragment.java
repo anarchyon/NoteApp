@@ -54,7 +54,7 @@ public class NoteFragment extends Fragment {
         text.setText(note.getText());
         creationDate.setText(note.getCreationDate());
 
-        super.onViewCreated(view, savedInstanceState);
+//        super.onViewCreated(view, savedInstanceState);
     }
 
     public interface Controller {
