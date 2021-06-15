@@ -22,4 +22,20 @@
     <style name="Theme.NoteApp.AppBarOverlay" parent="ThemeOverlay.MaterialComponents.Dark.ActionBar" />
 
     <style name="Theme.NoteApp.PopupOverlay" parent="ThemeOverlay.MaterialComponents.Light" />
+
+    <style name="item_note">
+        <item name="android:layout_marginStart">16dp</item>
+        <item name="android:layout_marginEnd">16dp</item>
+        <item name="android:layout_marginTop">8dp</item>
+        <item name="cardBackgroundColor">#99C581</item>
+    </style>
+
+    <style name="item_note.primary">
+        <item name="android:textSize">18sp</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
+    <style name="item_note.secondary">
+        <item name="android:textSize">12sp</item>
+    </style>
 </resources>

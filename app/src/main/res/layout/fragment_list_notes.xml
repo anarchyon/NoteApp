@@ -6,4 +6,10 @@
     tools:context=".ListNotesFragment"
     android:orientation="vertical">
 
+    <androidx.recyclerview.widget.RecyclerView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:id="@+id/recycler_view_note_list"/>
+
 </androidx.appcompat.widget.LinearLayoutCompat>
