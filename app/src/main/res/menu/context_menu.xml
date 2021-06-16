@@ -2,7 +2,7 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item
         android:id="@+id/modify"
-        android:title="@string/modify" />
+        android:title="@string/edit_note" />
     <item
         android:id="@+id/add_to_important"
         android:title="@string/add_to_important" />

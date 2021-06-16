@@ -10,8 +10,10 @@ public class TemporaryClassNotes {
     public static List<Note> getNotes() {
         List<Note> notes = new ArrayList<>();
         Note firstNote = new Note(
+                Note.generateNewId(),
                 "Добро пожаловать!",
-                "Приветствуем Вас в программе бла-бла-бла, тут можно бла-бла-бла"
+                "Приветствуем Вас в программе бла-бла-бла, тут можно бла-бла-бла",
+                Note.getCurrentDate()
         );
         notes.add(firstNote);
         return notes;

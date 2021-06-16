@@ -3,6 +3,7 @@ package learn.geekbrains.noteapp;
 import android.content.res.Configuration;
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -18,6 +19,7 @@ import java.util.List;
 
 public class ListNotesFragment extends Fragment {
     private static final String ARG_NOTES = "notes";
+
     private List<Note> notes;
     private RecyclerView recyclerView;
     private NoteAdapter adapter;
@@ -38,6 +40,8 @@ public class ListNotesFragment extends Fragment {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
             notes = getArguments().getParcelableArrayList(ARG_NOTES);
+        } else {
+            notes = TemporaryClassNotes.getNotes();
         }
     }
 
@@ -69,6 +73,11 @@ public class ListNotesFragment extends Fragment {
     private void renderList() {
         adapter.setData(notes);
         adapter.notifyDataSetChanged();
+    }
+
+    public void setNotes(List<Note> notes) {
+        this.notes = notes;
+        renderList();
     }
 
     public interface Contract {
