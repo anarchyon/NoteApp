@@ -5,15 +5,17 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     tools:context=".NoteFragment"
-    android:background="@color/white">
+    android:padding="@dimen/primary_margin_and_padding">
 
-    <androidx.appcompat.widget.AppCompatTextView
-        android:id="@+id/header"
+    <androidx.appcompat.widget.AppCompatEditText
+        android:id="@+id/subject_note"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:textSize="35sp"
+        android:textSize="@dimen/shown_note_header_text_size"
         android:textStyle="bold"
-        android:text="" />
+        android:scrollbars="vertical"
+        android:focusable="false"
+        android:hint="@string/header"/>
 
     <androidx.appcompat.widget.AppCompatTextView
         android:id="@+id/creation_date"
@@ -21,10 +23,13 @@
         android:layout_height="wrap_content"
         android:textAlignment="textEnd"/>
 
-    <androidx.appcompat.widget.AppCompatTextView
+    <androidx.appcompat.widget.AppCompatEditText
         android:id="@+id/text"
-        android:textSize="25sp"
+        android:textSize="@dimen/shown_note_text_size"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        android:scrollbars="vertical"
+        android:focusable="false"
+        android:hint="@string/text"/>
 
 </androidx.appcompat.widget.LinearLayoutCompat>

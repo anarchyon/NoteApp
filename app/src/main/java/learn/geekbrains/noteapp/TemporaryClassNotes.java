@@ -9,11 +9,13 @@ public class TemporaryClassNotes {
 
     public static List<Note> getNotes() {
         List<Note> notes = new ArrayList<>();
-        for (int i = 0; i < 10; i++) {
-            String name = HEADER + (i + 1);
-            String text = TEXT + (i + 1);
-            notes.add(new Note(name, text));
-        }
+        Note firstNote = new Note(
+                Note.generateNewId(),
+                "Добро пожаловать!",
+                "Приветствуем Вас в программе бла-бла-бла, тут можно бла-бла-бла",
+                Note.getCurrentDate()
+        );
+        notes.add(firstNote);
         return notes;
     }
 }

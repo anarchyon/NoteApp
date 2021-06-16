@@ -2,6 +2,11 @@
 <resources>
     <dimen name="text_margin">16dp</dimen>
     <dimen name="drawer_menu_header_height">160dp</dimen>
-    <dimen name="normal_padding">16dp</dimen>
+    <dimen name="primary_margin_and_padding">8dp</dimen>
+    <dimen name="secondary_margin_and_padding">16dp</dimen>
     <dimen name="drawer_menu_header_height_land">110dp</dimen>
+    <dimen name="shown_note_header_text_size">30sp</dimen>
+    <dimen name="shown_note_text_size">18sp</dimen>
+    <dimen name="card_view_height">100dp</dimen>
+    <dimen name="card_view_height_land">50dp</dimen>
 </resources>
