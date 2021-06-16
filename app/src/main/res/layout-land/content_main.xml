@@ -14,7 +14,6 @@
         tools:context=".MainActivity">
 
         <androidx.fragment.app.FragmentContainerView
-
             android:id="@+id/fragment_container"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
@@ -32,18 +31,22 @@
 
     </androidx.appcompat.widget.LinearLayoutCompat>
 
-    <com.google.android.material.appbar.AppBarLayout
+    <com.google.android.material.bottomappbar.BottomAppBar
+        android:id="@+id/bottom_menu"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:theme="@style/Theme.NoteApp.AppBarOverlay">
+        android:layout_gravity="bottom"
+        android:backgroundTint="?android:attr/colorPrimary"
+        app:fabAlignmentMode="end"/>
 
-        <androidx.appcompat.widget.Toolbar
-            android:id="@+id/toolbar"
-            android:layout_width="match_parent"
-            android:layout_height="?attr/actionBarSize"
-            android:background="?attr/colorPrimary"
-            app:popupTheme="@style/Theme.NoteApp.PopupOverlay" />
-
-    </com.google.android.material.appbar.AppBarLayout>
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/fab_popup_menu"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:backgroundTint="?android:attr/colorPrimary"
+        android:contentDescription="@string/add_note"
+        app:fabSize="normal"
+        app:layout_anchor="@id/bottom_menu"
+        app:srcCompat="@android:drawable/ic_menu_add" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
