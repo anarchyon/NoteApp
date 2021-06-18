@@ -38,7 +38,7 @@ public class ListNotesFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
+        if (getArguments() != null && getArguments().containsKey(ARG_NOTES)) {
             notes = getArguments().getParcelableArrayList(ARG_NOTES);
         } else {
             notes = TemporaryClassNotes.getNotes();
@@ -54,7 +54,7 @@ public class ListNotesFragment extends Fragment {
     }
 
     @Override
-    public void onViewCreated(View view, Bundle savedInstanceState) {
+    public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         adapter = new NoteAdapter();
         adapter.setOnItemClickListener(getContract()::getNoteAndShow);
         boolean isLandscape =

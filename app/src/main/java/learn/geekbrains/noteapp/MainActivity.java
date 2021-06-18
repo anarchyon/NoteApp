@@ -60,7 +60,7 @@ public class MainActivity extends AppCompatActivity implements ListNotesFragment
         clearBackStack();
         getSupportFragmentManager()
                 .beginTransaction()
-                .replace(R.id.fragment_container, ListNotesFragment.newInstance(notes), NOTE_LIST_FRAGMENT_TAG)
+                .replace(R.id.fragment_main_container, ListNotesFragment.newInstance(notes), NOTE_LIST_FRAGMENT_TAG)
                 .commit();
     }
 
@@ -130,7 +130,7 @@ public class MainActivity extends AppCompatActivity implements ListNotesFragment
     private void showNote(Note note) {
         boolean isLandscape = getResources().getConfiguration().orientation
                 == Configuration.ORIENTATION_LANDSCAPE;
-        int fragmentIdForNote = isLandscape ? R.id.fragment_note_details : R.id.fragment_container;
+        int fragmentIdForNote = isLandscape ? R.id.fragment_additional_container : R.id.fragment_main_container;
 
         clearBackStack();
 
