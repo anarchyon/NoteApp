@@ -26,16 +26,26 @@ public class MainActivity extends AppCompatActivity implements ListNotesFragment
     private static final String NOTE_LIST_FRAGMENT_TAG = "list_fragment";
     private List<Note> notes;
     private Note note = null;
+    private boolean isLandscape;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        isLandscape = getResources().getConfiguration().orientation
+                == Configuration.ORIENTATION_LANDSCAPE;
+        if (isLandscape) {
+            getSupportFragmentManager()
+                    .beginTransaction()
+                    .replace(R.id.fragment_root_container, new RootLandFragment())
+                    .commit();
+        }
+
         initToolbarAndNavigationDrawer();
         initFab();
         loadStates(savedInstanceState);
-        initListNotes();
+        initListFragment();
 
         if (note != null) showNote(note);
     }
@@ -56,7 +66,7 @@ public class MainActivity extends AppCompatActivity implements ListNotesFragment
         if (notes == null) notes = TemporaryClassNotes.getNotes();
     }
 
-    private void initListNotes() {
+    private void initListFragment() {
         clearBackStack();
         getSupportFragmentManager()
                 .beginTransaction()
@@ -67,29 +77,6 @@ public class MainActivity extends AppCompatActivity implements ListNotesFragment
     private void initToolbarAndNavigationDrawer() {
         BottomAppBar bottomAppBar = findViewById(R.id.bottom_menu);
         setSupportActionBar(bottomAppBar);
-        DrawerLayout drawerLayout = findViewById(R.id.drawer_menu);
-        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawerLayout, bottomAppBar, R.string.nav_drawer_open, R.string.nav_drawer_close);
-        drawerLayout.addDrawerListener(toggle);
-        toggle.syncState();
-
-        addListenerToNavigationDrawer();
-    }
-
-    private void addListenerToNavigationDrawer() {
-        NavigationView navigationView = findViewById(R.id.nav_view);
-        navigationView.setNavigationItemSelectedListener(item -> {
-            int itemId = item.getItemId();
-            if (itemId == R.id.nav_menu_home) {
-                Toast.makeText(this, "главная страница", Toast.LENGTH_LONG).show();
-            } else if (itemId == R.id.nav_menu_about) {
-                Toast.makeText(this, "о приложении", Toast.LENGTH_LONG).show();
-            } else if (itemId == R.id.menu_settings) {
-                Toast.makeText(this, "окно настроек", Toast.LENGTH_LONG).show();
-            } else if (itemId == R.id.menu_important) {
-                Toast.makeText(this, "открыть список важных заметок", Toast.LENGTH_LONG).show();
-            }
-            return true;
-        });
     }
 
     @Override
@@ -103,6 +90,9 @@ public class MainActivity extends AppCompatActivity implements ListNotesFragment
         int itemId = item.getItemId();
         if (itemId == R.id.menu_main_search_button) {
             Toast.makeText(this, "тут будет поиск", Toast.LENGTH_LONG).show();
+        } else if (itemId == android.R.id.home) {
+            BottomNavigationDrawer bottomNavigationDrawer = new BottomNavigationDrawer();
+            bottomNavigationDrawer.show(getSupportFragmentManager(), BottomNavigationDrawer.TAG);
         }
         return true;
     }
@@ -128,8 +118,6 @@ public class MainActivity extends AppCompatActivity implements ListNotesFragment
     }
 
     private void showNote(Note note) {
-        boolean isLandscape = getResources().getConfiguration().orientation
-                == Configuration.ORIENTATION_LANDSCAPE;
         int fragmentIdForNote = isLandscape ? R.id.fragment_additional_container : R.id.fragment_main_container;
 
         clearBackStack();
@@ -146,7 +134,7 @@ public class MainActivity extends AppCompatActivity implements ListNotesFragment
         clearBackStack();
         ListNotesFragment listNotesFragment =
                 (ListNotesFragment) getSupportFragmentManager()
-                .findFragmentByTag(NOTE_LIST_FRAGMENT_TAG);
+                        .findFragmentByTag(NOTE_LIST_FRAGMENT_TAG);
 
         notes.remove(note);
         notes.add(note);
