@@ -20,4 +20,8 @@
     <string name="nav_drawer_close">Закрыто</string>
     <string name="modify_note">Редактировать</string>
     <string name="save_note">Сохранить</string>
+    <string name="delete_note">Удалить заметку</string>
+    <string name="open_note">Открыть</string>
+    <string name="note_is_imortant">Заметка помечена как важная</string>
+    <string name="note_isnt_important">Заметка больше не является важной</string>
 </resources>

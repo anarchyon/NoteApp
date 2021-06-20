@@ -18,12 +18,19 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 
-public class MainActivity extends AppCompatActivity implements ListNotesFragment.Contract, NoteFragment.Contract {
+public class MainActivity
+        extends AppCompatActivity
+        implements
+        ListNotesFragment.Contract,
+        NoteFragment.Contract,
+        BottomNavigationDrawer.NavController {
+
     public static final String KEY_NOTE = "key_note";
     private static final String KEY_LIST_NOTES = "key_list_notes";
-    private static final String NOTE_LIST_FRAGMENT_TAG = "list_fragment";
+    private static final String ROOT_FRAGMENT_BACKSTACK_TAG = "root_fragment_backstack";
     private List<Note> notes;
     private Note note = null;
     private boolean isLandscape;
@@ -33,21 +40,10 @@ public class MainActivity extends AppCompatActivity implements ListNotesFragment
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        isLandscape = getResources().getConfiguration().orientation
-                == Configuration.ORIENTATION_LANDSCAPE;
-        if (isLandscape) {
-            getSupportFragmentManager()
-                    .beginTransaction()
-                    .replace(R.id.fragment_root_container, new RootLandFragment())
-                    .commit();
-        }
-
         initToolbarAndNavigationDrawer();
         initFab();
         loadStates(savedInstanceState);
         initListFragment();
-
-        if (note != null) showNote(note);
     }
 
     private void initFab() {
@@ -67,10 +63,68 @@ public class MainActivity extends AppCompatActivity implements ListNotesFragment
     }
 
     private void initListFragment() {
+        isLandscape = getResources().getConfiguration().orientation
+                == Configuration.ORIENTATION_LANDSCAPE;
+
+        if (isLandscape) {
+            getSupportFragmentManager()
+                    .beginTransaction()
+                    .replace(R.id.fragment_root_container, new RootLandFragment(), RootLandFragment.TAG)
+                    .commit();
+        }
+
         clearBackStack();
         getSupportFragmentManager()
                 .beginTransaction()
-                .replace(R.id.fragment_main_container, ListNotesFragment.newInstance(notes), NOTE_LIST_FRAGMENT_TAG)
+                .replace(
+                        R.id.fragment_main_container,
+                        ListNotesFragment.newInstance(notes),
+                        ListNotesFragment.TAG
+                )
+                .commit();
+
+        if (note != null) showNote(note);
+    }
+
+    private void initSettingsFragment() {
+//        clearBackStack();
+        getSupportFragmentManager()
+                .beginTransaction()
+                .replace(
+                        isLandscape ?
+                                R.id.fragment_root_container :
+                                R.id.fragment_main_container,
+                        new SettingsFragment()
+                )
+                .addToBackStack(ROOT_FRAGMENT_BACKSTACK_TAG)
+                .commit();
+    }
+
+    private void initAboutFragment() {
+//        clearBackStack();
+        getSupportFragmentManager()
+                .beginTransaction()
+                .replace(
+                        isLandscape ?
+                                R.id.fragment_root_container :
+                                R.id.fragment_main_container,
+                        new AboutFragment()
+                )
+                .addToBackStack(ROOT_FRAGMENT_BACKSTACK_TAG)
+                .commit();
+    }
+
+    private void initListImportantFragment() {
+//        clearBackStack();
+        getSupportFragmentManager()
+                .beginTransaction()
+                .replace(
+                        isLandscape ?
+                                R.id.fragment_root_container :
+                                R.id.fragment_main_container,
+                        new ImportantNotesFragment()
+                )
+                .addToBackStack(ROOT_FRAGMENT_BACKSTACK_TAG)
                 .commit();
     }
 
@@ -105,8 +159,7 @@ public class MainActivity extends AppCompatActivity implements ListNotesFragment
     }
 
     @Override
-    public void getNoteAndShow(Note note) {
-        this.note = note;
+    public void showReceivedNote(Note note) {
         showNote(note);
     }
 
@@ -118,13 +171,18 @@ public class MainActivity extends AppCompatActivity implements ListNotesFragment
     }
 
     private void showNote(Note note) {
-        int fragmentIdForNote = isLandscape ? R.id.fragment_additional_container : R.id.fragment_main_container;
-
         clearBackStack();
+        this.note = note;
 
         getSupportFragmentManager()
                 .beginTransaction()
-                .replace(fragmentIdForNote, NoteFragment.newInstance(note))
+                .replace(
+                        isLandscape ?
+                                R.id.fragment_additional_container :
+                                R.id.fragment_main_container,
+                        NoteFragment.newInstance(note),
+                        NoteFragment.TAG
+                )
                 .addToBackStack(null)
                 .commit();
     }
@@ -133,12 +191,35 @@ public class MainActivity extends AppCompatActivity implements ListNotesFragment
     public void saveNote(Note note) {
         clearBackStack();
         ListNotesFragment listNotesFragment =
-                (ListNotesFragment) getSupportFragmentManager()
-                        .findFragmentByTag(NOTE_LIST_FRAGMENT_TAG);
+                (ListNotesFragment) getFragmentByTag(ListNotesFragment.TAG);
 
         notes.remove(note);
         notes.add(note);
 
+        sendNotesToListFragment(listNotesFragment);
+    }
+
+    @Override
+    public void deleteNote(Note note) {
+        clearBackStack();
+        ListNotesFragment listNotesFragment =
+                (ListNotesFragment) getFragmentByTag(ListNotesFragment.TAG);
+
+        notes.remove(note);
+
+        sendNotesToListFragment(listNotesFragment);
+    }
+
+//    @Override
+    public void markNoteImportant(Note note) {
+
+    }
+
+    private Fragment getFragmentByTag(String tag) {
+        return getSupportFragmentManager().findFragmentByTag(tag);
+    }
+
+    private void sendNotesToListFragment(ListNotesFragment listNotesFragment) {
         if (listNotesFragment != null) {
             listNotesFragment.setNotes(notes);
         }
@@ -146,7 +227,30 @@ public class MainActivity extends AppCompatActivity implements ListNotesFragment
 
     @Override
     public void onBackPressed() {
-        note = null;
+        NoteFragment noteFragment = (NoteFragment) getFragmentByTag(NoteFragment.TAG);
+        if (noteFragment != null && noteFragment.isVisible()) {
+            note = null;
+        }
         super.onBackPressed();
+        if (isLandscape) {
+            int backStackEntryCount = getSupportFragmentManager().getBackStackEntryCount();
+            if (backStackEntryCount == 0 || (noteFragment != null && backStackEntryCount == 1) ) {
+                initListFragment();
+            }
+        }
+    }
+
+    @Override
+    public void showFragment(int idFragment) {
+        if (idFragment == R.id.nav_menu_important) {
+            initListImportantFragment();
+        } else if (idFragment == R.id.nav_menu_settings) {
+            initSettingsFragment();
+        } else if (idFragment == R.id.nav_menu_about) {
+            initAboutFragment();
+        } else if (idFragment == R.id.nav_menu_home) {
+            note = null;
+            initListFragment();
+        }
     }
 }
