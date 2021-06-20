@@ -71,6 +71,9 @@ public class NoteFragment extends Fragment {
         creationDate = view.findViewById(R.id.creation_date);
         isImportant = view.findViewById(R.id.toggle_important);
 
+        fillNoteFields();
+        setMenuListener();
+
         isImportant.setOnCheckedChangeListener((btnView, isChecked) -> {
             if (isChecked) {
                 Toast.makeText(getContext(), R.string.note_is_imortant, Toast.LENGTH_SHORT).show();
@@ -78,9 +81,6 @@ public class NoteFragment extends Fragment {
                 Toast.makeText(getContext(), R.string.note_isnt_important, Toast.LENGTH_SHORT).show();
             }
         });
-
-        fillNoteFields();
-        setMenuListener();
     }
 
     private void setMenuListener() {
