@@ -10,10 +10,14 @@ import java.util.Objects;
 import java.util.UUID;
 
 public class Note implements Parcelable {
-    private String id;
+    public static final int NOTE_IMPORTANT = 1;
+    public static final int NOTE_NOT_IMPORTANT = 0;
+
+    private final String id;
     private String name;
     private String text;
     private String creationDate;
+    private int isImportant;
 
     public static String getCurrentDate() {
         return new SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.getDefault()).format(Calendar.getInstance().getTime());
@@ -27,6 +31,7 @@ public class Note implements Parcelable {
         this.name = name;
         this.text = text;
         this.creationDate = creationDate;
+        isImportant = NOTE_NOT_IMPORTANT;
     }
 
     protected Note(Parcel in) {
@@ -34,6 +39,7 @@ public class Note implements Parcelable {
         text = in.readString();
         creationDate = in.readString();
         id = in.readString();
+        isImportant = in.readInt();
     }
 
     public static final Creator<Note> CREATOR = new Creator<Note>() {
@@ -64,6 +70,18 @@ public class Note implements Parcelable {
         return id;
     }
 
+    public int getIsImportant() {
+        return isImportant;
+    }
+
+    public void setIsImportant(int isImportant) {
+        this.isImportant = isImportant;
+    }
+
+    public void setCreationDate(String creationDate) {
+        this.creationDate = creationDate;
+    }
+
     public void setName(String name) {
         this.name = name;
     }
@@ -83,6 +101,7 @@ public class Note implements Parcelable {
         parcel.writeString(getText());
         parcel.writeString(getCreationDate());
         parcel.writeString(getId());
+        parcel.writeInt(getIsImportant());
     }
 
     @Override

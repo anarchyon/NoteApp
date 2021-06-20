@@ -1,35 +1,51 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.appcompat.widget.LinearLayoutCompat xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    tools:context=".NoteFragment"
-    android:padding="@dimen/primary_margin_and_padding">
+    android:padding="@dimen/primary_margin_and_padding"
+    tools:context=".NoteFragment">
 
     <androidx.appcompat.widget.AppCompatEditText
         android:id="@+id/subject_note"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:hint="@string/header"
+        android:scrollbars="vertical"
         android:textSize="@dimen/shown_note_header_text_size"
         android:textStyle="bold"
-        android:scrollbars="vertical"
-        android:focusable="false"
-        android:hint="@string/header"/>
-
-    <androidx.appcompat.widget.AppCompatTextView
-        android:id="@+id/creation_date"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:textAlignment="textEnd"/>
+        app:layout_constraintTop_toTopOf="parent" />
 
     <androidx.appcompat.widget.AppCompatEditText
         android:id="@+id/text"
-        android:textSize="@dimen/shown_note_text_size"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:hint="@string/text"
         android:scrollbars="vertical"
-        android:focusable="false"
-        android:hint="@string/text"/>
+        android:textSize="@dimen/shown_note_text_size"
+        app:layout_constraintTop_toBottomOf="@id/toggle_important" />
 
-</androidx.appcompat.widget.LinearLayoutCompat>
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/creation_date"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAlignment="textEnd"
+        app:layout_constraintBottom_toTopOf="@id/text"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/subject_note" />
+
+    <androidx.appcompat.widget.AppCompatToggleButton
+        android:id="@+id/toggle_important"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:background="@drawable/toggle_button"
+        android:textOff=""
+        android:textOn=""
+        android:layout_marginTop="@dimen/secondary_margin_and_padding"
+        android:layout_marginBottom="@dimen/secondary_margin_and_padding"
+        app:layout_constraintBottom_toTopOf="@id/text"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/subject_note" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
@@ -12,7 +11,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginBottom="?attr/actionBarSize"
-        android:paddingBottom="@dimen/secondary_margin_and_padding"/>
+        android:paddingBottom="@dimen/secondary_margin_and_padding" />
 
     <com.google.android.material.bottomappbar.BottomAppBar
         android:id="@+id/bottom_menu"
@@ -20,17 +19,17 @@
         android:layout_height="wrap_content"
         android:layout_gravity="bottom"
         android:backgroundTint="?android:attr/colorPrimary"
-        app:fabAlignmentMode="end"
-        app:navigationIcon="@drawable/ic_baseline_menu_24"/>
+        app:fabAlignmentMode="center"
+        app:navigationIcon="@drawable/ic_baseline_menu_24" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/fab_popup_menu"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:contentDescription="@string/add_note"
         android:backgroundTint="?android:attr/colorPrimary"
-        app:srcCompat="@android:drawable/ic_menu_add"
+        android:contentDescription="@string/add_note"
         app:fabSize="normal"
-        app:layout_anchor="@id/bottom_menu" />
+        app:layout_anchor="@id/bottom_menu"
+        app:srcCompat="@android:drawable/ic_menu_add" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
