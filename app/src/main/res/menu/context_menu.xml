@@ -4,6 +4,12 @@
         android:id="@+id/menu_context_open_note"
         android:title="@string/open_note" />
     <item
+        android:id="@+id/menu_context_set_important"
+        android:title="@string/add_to_important" />
+    <item
+        android:id="@+id/menu_context_set_not_important"
+        android:title="@string/delete_from_important" />
+    <item
         android:id="@+id/menu_context_delete"
         android:title="@string/delete" />
 </menu>

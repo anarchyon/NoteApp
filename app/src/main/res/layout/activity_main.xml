@@ -20,16 +20,17 @@
         android:layout_gravity="bottom"
         android:backgroundTint="?android:attr/colorPrimary"
         app:fabAlignmentMode="center"
-        app:navigationIcon="@drawable/ic_baseline_menu_24" />
+        app:navigationIcon="@drawable/ic_baseline_menu_24"
+        app:menu="@menu/main"
+        app:hideOnScroll="true"/>
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/fab_popup_menu"
+        android:id="@+id/fab"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:backgroundTint="?android:attr/colorPrimary"
         android:contentDescription="@string/add_note"
         app:fabSize="normal"
-        app:layout_anchor="@id/bottom_menu"
-        app:srcCompat="@android:drawable/ic_menu_add" />
+        app:layout_anchor="@id/bottom_menu" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

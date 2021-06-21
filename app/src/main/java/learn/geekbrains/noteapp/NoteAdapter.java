@@ -4,6 +4,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.Filter;
+import android.widget.Filterable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -12,7 +14,7 @@ import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.RecyclerView;
 
-public class NoteAdapter extends RecyclerView.Adapter<NoteViewHolder> {
+public class NoteAdapter extends RecyclerView.Adapter<NoteViewHolder> implements Filterable {
     private List<Note> data = new ArrayList<>();
     private Note note;
     private OnItemClickListener onItemClickListener;
@@ -35,6 +37,11 @@ public class NoteAdapter extends RecyclerView.Adapter<NoteViewHolder> {
 
     public void setOnItemClickListener(OnItemClickListener onItemClickListener) {
         this.onItemClickListener = onItemClickListener;
+    }
+
+    @Override
+    public Filter getFilter() {
+        return null;
     }
 
     interface OnItemClickListener {

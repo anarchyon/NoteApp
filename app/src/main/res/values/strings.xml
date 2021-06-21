@@ -24,4 +24,5 @@
     <string name="open_note">Открыть</string>
     <string name="note_is_imortant">Заметка помечена как важная</string>
     <string name="note_isnt_important">Заметка больше не является важной</string>
+    <string name="delete_from_important">Убрать из важных</string>
 </resources>

@@ -31,6 +31,7 @@ public class NoteFragment extends Fragment {
     private AppCompatEditText subjectNote, textNote;
     private AppCompatTextView creationDate;
     private AppCompatToggleButton isImportant;
+    BottomAppBar bottomAppBar;
 
     public NoteFragment() {
     }
@@ -55,14 +56,14 @@ public class NoteFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_note, container, false);
-        setHasOptionsMenu(true);
+//        setHasOptionsMenu(true);
         return view;
     }
 
-    @Override
-    public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
-        inflater.inflate(R.menu.bottom_note_menu, menu);
-    }
+//    @Override
+//    public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
+//        inflater.inflate(R.menu.bottom_note_menu, menu);
+//    }
 
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
@@ -84,16 +85,32 @@ public class NoteFragment extends Fragment {
     }
 
     private void setMenuListener() {
-        BottomAppBar bottomAppBar = requireActivity().findViewById(R.id.bottom_menu);
-        bottomAppBar.setOnMenuItemClickListener(item -> {
-            int itemId = item.getItemId();
-            if (itemId == R.id.menu_bottom_save_note) {
-                getContract().saveNote(gatherNote());
-            } else if (itemId == R.id.menu_bottom_delete_note) {
-                getContract().deleteNote(note);
-            }
-            return true;
-        });
+        bottomAppBar = requireActivity().findViewById(R.id.bottom_menu);
+        if (bottomAppBar != null) {
+            bottomAppBar.getMenu().findItem(R.id.menu_bottom_delete_note).setVisible(true);
+            bottomAppBar.getMenu().findItem(R.id.menu_bottom_save_note).setVisible(true);
+
+            bottomAppBar.setOnMenuItemClickListener(item -> {
+                int itemId = item.getItemId();
+                if (itemId == R.id.menu_bottom_save_note) {
+                    getContract().saveNote(gatherNote());
+                    return true;
+                } else if (itemId == R.id.menu_bottom_delete_note) {
+                    getContract().deleteNote(note);
+                    return true;
+                }
+                return false;
+            });
+        }
+    }
+
+    @Override
+    public void onStop() {
+        if (bottomAppBar != null) {
+            bottomAppBar.getMenu().findItem(R.id.menu_bottom_delete_note).setVisible(false);
+            bottomAppBar.getMenu().findItem(R.id.menu_bottom_save_note).setVisible(false);
+        }
+        super.onStop();
     }
 
     private Note gatherNote() {
@@ -133,6 +150,7 @@ public class NoteFragment extends Fragment {
 
     public interface Contract {
         void saveNote(Note note);
+
         void deleteNote(Note note);
     }
 
