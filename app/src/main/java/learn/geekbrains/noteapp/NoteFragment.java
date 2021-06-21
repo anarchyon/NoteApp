@@ -18,6 +18,7 @@ import android.view.ViewGroup;
 import android.widget.Toast;
 
 import com.google.android.material.bottomappbar.BottomAppBar;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 public class NoteFragment extends Fragment {
     public static final String TAG = "note_fragment";
@@ -26,7 +27,7 @@ public class NoteFragment extends Fragment {
     private AppCompatEditText subjectNote, textNote;
     private AppCompatTextView creationDate;
     private AppCompatToggleButton isImportant;
-    BottomAppBar bottomAppBar;
+    private BottomAppBar bottomAppBar;
 
     public NoteFragment() {
     }
