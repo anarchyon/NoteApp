@@ -19,11 +19,6 @@ import android.widget.Toast;
 
 import com.google.android.material.bottomappbar.BottomAppBar;
 
-/**
- * A simple {@link Fragment} subclass.
- * Use the {@link NoteFragment#newInstance} factory method to
- * create an instance of this fragment.
- */
 public class NoteFragment extends Fragment {
     public static final String TAG = "note_fragment";
     private static final String ARG_NOTE = "note";
@@ -56,14 +51,8 @@ public class NoteFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_note, container, false);
-//        setHasOptionsMenu(true);
         return view;
     }
-
-//    @Override
-//    public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
-//        inflater.inflate(R.menu.bottom_note_menu, menu);
-//    }
 
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
@@ -87,8 +76,7 @@ public class NoteFragment extends Fragment {
     private void setMenuListener() {
         bottomAppBar = requireActivity().findViewById(R.id.bottom_menu);
         if (bottomAppBar != null) {
-            bottomAppBar.getMenu().findItem(R.id.menu_bottom_delete_note).setVisible(true);
-            bottomAppBar.getMenu().findItem(R.id.menu_bottom_save_note).setVisible(true);
+            initBottomAppBarAndFabState();
 
             bottomAppBar.setOnMenuItemClickListener(item -> {
                 int itemId = item.getItemId();
@@ -102,6 +90,11 @@ public class NoteFragment extends Fragment {
                 return false;
             });
         }
+    }
+
+    private void initBottomAppBarAndFabState() {
+        bottomAppBar.getMenu().findItem(R.id.menu_bottom_delete_note).setVisible(true);
+        bottomAppBar.getMenu().findItem(R.id.menu_bottom_save_note).setVisible(true);
     }
 
     @Override

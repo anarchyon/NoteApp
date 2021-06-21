@@ -68,6 +68,7 @@ public class ListNotesFragment extends Fragment {
 
     @Override
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
+        setMenuListener();
         adapter = new NoteAdapter(this);
         adapter.setOnItemClickListener(getContract()::showReceivedNote);
         boolean isLandscape =
@@ -82,18 +83,12 @@ public class ListNotesFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
         renderList();
 
-        setMenuListener();
-        fab = requireActivity().findViewById(R.id.fab);
-        fab.setImageResource(R.drawable.ic_baseline_add_24);
-        fab.setOnClickListener(view1 -> getContract().showReceivedNote(null));
-        bottomAppBar.setFabAlignmentMode(BottomAppBar.FAB_ALIGNMENT_MODE_CENTER);
-        bottomAppBar.setNavigationIcon(R.drawable.ic_baseline_menu_24);
     }
 
     private void setMenuListener() {
         bottomAppBar = requireActivity().findViewById(R.id.bottom_menu);
         if (bottomAppBar != null) {
-            bottomAppBar.getMenu().findItem(R.id.menu_main_search_button).setVisible(true);
+            initBottomAppBarAndFabState();
 
             bottomAppBar.setOnMenuItemClickListener(item -> {
                 int itemId = item.getItemId();
@@ -106,14 +101,28 @@ public class ListNotesFragment extends Fragment {
         }
     }
 
+    private void initBottomAppBarAndFabState() {
+        bottomAppBar.setFabAlignmentMode(BottomAppBar.FAB_ALIGNMENT_MODE_CENTER);
+        bottomAppBar.setNavigationIcon(R.drawable.ic_baseline_menu_24);
+        bottomAppBar.getMenu().findItem(R.id.menu_main_search_button).setVisible(true);
+
+        fab = requireActivity().findViewById(R.id.fab);
+        if (fab != null) {
+            fab.setImageResource(R.drawable.ic_baseline_add_24);
+            fab.setOnClickListener(view1 -> getContract().showReceivedNote(null));
+        }
+    }
+
     @Override
     public void onStop() {
         if (bottomAppBar != null) {
             bottomAppBar.getMenu().findItem(R.id.menu_main_search_button).setVisible(false);
             bottomAppBar.setFabAlignmentMode(BottomAppBar.FAB_ALIGNMENT_MODE_END);
+            bottomAppBar.setNavigationIcon(null);
+        }
+        if (fab != null) {
             fab.setImageResource(R.drawable.ic_baseline_reply_24);
             fab.setOnClickListener(view -> requireActivity().onBackPressed());
-            bottomAppBar.setNavigationIcon(null);
         }
         super.onStop();
     }
