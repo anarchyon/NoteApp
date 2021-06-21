@@ -33,7 +33,6 @@ public class RootLandFragment extends Fragment {
     @Override
     public void onStop() {
         if (bottomAppBar != null) {
-            bottomAppBar.setFabAlignmentMode(BottomAppBar.FAB_ALIGNMENT_MODE_END);
             bottomAppBar.getMenu().findItem(R.id.menu_main_search_button).setVisible(false);
             bottomAppBar.getMenu().findItem(R.id.menu_bottom_delete_note).setVisible(false);
             bottomAppBar.getMenu().findItem(R.id.menu_bottom_save_note).setVisible(false);

@@ -102,7 +102,6 @@ public class ListNotesFragment extends Fragment {
     }
 
     private void initBottomAppBarAndFabState() {
-        bottomAppBar.setFabAlignmentMode(BottomAppBar.FAB_ALIGNMENT_MODE_CENTER);
         bottomAppBar.setNavigationIcon(R.drawable.ic_baseline_menu_24);
         bottomAppBar.getMenu().findItem(R.id.menu_main_search_button).setVisible(true);
 
@@ -114,17 +113,16 @@ public class ListNotesFragment extends Fragment {
     }
 
     @Override
-    public void onStop() {
+    public void onPause() {
         if (bottomAppBar != null) {
             bottomAppBar.getMenu().findItem(R.id.menu_main_search_button).setVisible(false);
-            bottomAppBar.setFabAlignmentMode(BottomAppBar.FAB_ALIGNMENT_MODE_END);
             bottomAppBar.setNavigationIcon(null);
         }
         if (fab != null) {
             fab.setImageResource(R.drawable.ic_baseline_reply_24);
             fab.setOnClickListener(view -> requireActivity().onBackPressed());
         }
-        super.onStop();
+        super.onPause();
     }
 
     private void renderList() {
