@@ -18,6 +18,10 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
+
+import com.google.android.material.bottomappbar.BottomAppBar;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -29,6 +33,8 @@ public class ListNotesFragment extends Fragment {
     private List<Note> notes;
     private RecyclerView recyclerView;
     private NoteAdapter adapter;
+    private BottomAppBar bottomAppBar;
+    private FloatingActionButton fab;
 
     public ListNotesFragment() {
     }
@@ -75,6 +81,41 @@ public class ListNotesFragment extends Fragment {
         recyclerView.setAdapter(adapter);
         super.onViewCreated(view, savedInstanceState);
         renderList();
+
+        setMenuListener();
+        fab = requireActivity().findViewById(R.id.fab);
+        fab.setImageResource(R.drawable.ic_baseline_add_24);
+        fab.setOnClickListener(view1 -> getContract().showReceivedNote(null));
+        bottomAppBar.setFabAlignmentMode(BottomAppBar.FAB_ALIGNMENT_MODE_CENTER);
+        bottomAppBar.setNavigationIcon(R.drawable.ic_baseline_menu_24);
+    }
+
+    private void setMenuListener() {
+        bottomAppBar = requireActivity().findViewById(R.id.bottom_menu);
+        if (bottomAppBar != null) {
+            bottomAppBar.getMenu().findItem(R.id.menu_main_search_button).setVisible(true);
+
+            bottomAppBar.setOnMenuItemClickListener(item -> {
+                int itemId = item.getItemId();
+                if (itemId == R.id.menu_main_search_button) {
+                    Toast.makeText(getContext(), "тут будет поиск", Toast.LENGTH_LONG).show();
+                    return true;
+                }
+                return false;
+            });
+        }
+    }
+
+    @Override
+    public void onStop() {
+        if (bottomAppBar != null) {
+            bottomAppBar.getMenu().findItem(R.id.menu_main_search_button).setVisible(false);
+            bottomAppBar.setFabAlignmentMode(BottomAppBar.FAB_ALIGNMENT_MODE_END);
+            fab.setImageResource(R.drawable.ic_baseline_reply_24);
+            fab.setOnClickListener(view -> requireActivity().onBackPressed());
+            bottomAppBar.setNavigationIcon(null);
+        }
+        super.onStop();
     }
 
     private void renderList() {
@@ -94,7 +135,10 @@ public class ListNotesFragment extends Fragment {
 
     public interface Contract {
         void showReceivedNote(Note note);
+
         void deleteNote(Note note);
+
+        void saveNote(Note note);
     }
 
     private Contract getContract() {
@@ -118,15 +162,28 @@ public class ListNotesFragment extends Fragment {
         super.onCreateContextMenu(menu, v, menuInfo);
         MenuInflater inflater = requireActivity().getMenuInflater();
         inflater.inflate(R.menu.context_menu, menu);
+        Note newNote = adapter.getNote();
+        if (newNote.getIsImportant() == 0) {
+            menu.removeItem(R.id.menu_context_set_not_important);
+        } else {
+            menu.removeItem(R.id.menu_context_set_important);
+        }
     }
 
     @Override
     public boolean onContextItemSelected(@NonNull MenuItem item) {
         int itemId = item.getItemId();
+        Note newNote = adapter.getNote();
         if (itemId == R.id.menu_context_delete) {
-            getContract().deleteNote(adapter.getNote());
+            getContract().deleteNote(newNote);
         } else if (itemId == R.id.menu_context_open_note) {
-            getContract().showReceivedNote(adapter.getNote());
+            getContract().showReceivedNote(newNote);
+        } else if (itemId == R.id.menu_context_set_important) {
+            newNote.setIsImportant(Note.NOTE_IMPORTANT);
+            getContract().saveNote(newNote);
+        } else if (itemId == R.id.menu_context_set_not_important) {
+            newNote.setIsImportant(Note.NOTE_NOT_IMPORTANT);
+            getContract().saveNote(newNote);
         }
         return super.onContextItemSelected(item);
     }

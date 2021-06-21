@@ -5,12 +5,12 @@ import android.widget.Filter;
 import java.util.ArrayList;
 import java.util.List;
 
-public class TextFilter extends Filter {
+public class ImportanceFilter extends Filter {
     private final NoteAdapter adapter;
     private final List<Note> originalList;
     private final List<Note> filteredList;
 
-    public TextFilter (NoteAdapter adapter, List<Note> originalList) {
+    public ImportanceFilter (NoteAdapter adapter, List<Note> originalList) {
         super();
         this.adapter = adapter;
         this.originalList = new ArrayList<>(originalList);

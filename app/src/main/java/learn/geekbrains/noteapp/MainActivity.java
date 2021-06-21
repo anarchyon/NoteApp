@@ -3,21 +3,15 @@ package learn.geekbrains.noteapp;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.os.Parcelable;
-import android.view.Menu;
-import android.view.MenuItem;
-import android.widget.Toast;
 
 import com.google.android.material.bottomappbar.BottomAppBar;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.google.android.material.navigation.NavigationView;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import androidx.annotation.NonNull;
-import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 
@@ -34,24 +28,26 @@ public class MainActivity
     private List<Note> notes;
     private Note note = null;
     private boolean isLandscape;
+    private BottomAppBar bottomAppBar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        initToolbarAndNavigationDrawer();
-        initFab();
+        initBottomAppBar();
+//        initFab();
         loadStates(savedInstanceState);
         initListFragment();
     }
 
-    private void initFab() {
-        FloatingActionButton fab = findViewById(R.id.fab_popup_menu);
-        fab.setOnClickListener(v -> {
-            showNote(null);
-        });
-    }
+//    private void initFab() {
+//        FloatingActionButton fab = findViewById(R.id.fab);
+//        fab.setOnClickListener(v -> {
+//            onBackPressed();
+//            showNote(null);
+//        });
+//    }
 
     private void loadStates(Bundle savedInstanceState) {
         if (savedInstanceState != null) {
@@ -128,28 +124,41 @@ public class MainActivity
                 .commit();
     }
 
-    private void initToolbarAndNavigationDrawer() {
-        BottomAppBar bottomAppBar = findViewById(R.id.bottom_menu);
-        setSupportActionBar(bottomAppBar);
-    }
+    private void initBottomAppBar() {
+        bottomAppBar = findViewById(R.id.bottom_menu);
+//        setSupportActionBar(bottomAppBar);
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.main, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        int itemId = item.getItemId();
-        if (itemId == R.id.menu_main_search_button) {
-            Toast.makeText(this, "тут будет поиск", Toast.LENGTH_LONG).show();
-        } else if (itemId == android.R.id.home) {
+        bottomAppBar.setNavigationOnClickListener(view -> {
             BottomNavigationDrawer bottomNavigationDrawer = new BottomNavigationDrawer();
             bottomNavigationDrawer.show(getSupportFragmentManager(), BottomNavigationDrawer.TAG);
-        }
-        return true;
+        });
+//
+//        bottomAppBar.setOnMenuItemClickListener(item -> {
+//            int itemId = item.getItemId();
+//            if (itemId == R.id.menu_main_search_button) {
+//                return true;
+//            }
+//            return false;
+//        });
     }
+
+//    @Override
+//    public boolean onCreateOptionsMenu(Menu menu) {
+//        getMenuInflater().inflate(R.menu.main, menu);
+//        return true;
+//    }
+
+//    @Override
+//    public boolean onOptionsItemSelected(MenuItem item) {
+//        int itemId = item.getItemId();
+//        if (itemId == R.id.menu_main_search_button) {
+//            Toast.makeText(this, "тут будет поиск", Toast.LENGTH_LONG).show();
+//        } else if (itemId == android.R.id.home) {
+//            BottomNavigationDrawer bottomNavigationDrawer = new BottomNavigationDrawer();
+//            bottomNavigationDrawer.show(getSupportFragmentManager(), BottomNavigationDrawer.TAG);
+//        }
+//        return true;
+//    }
 
     @Override
     protected void onSaveInstanceState(@NonNull Bundle outState) {
@@ -171,6 +180,7 @@ public class MainActivity
     }
 
     private void showNote(Note note) {
+        replaceBottomAppBarMenu();
         clearBackStack();
         this.note = note;
 
@@ -185,6 +195,10 @@ public class MainActivity
                 )
                 .addToBackStack(null)
                 .commit();
+    }
+
+    private void replaceBottomAppBarMenu() {
+
     }
 
     @Override
@@ -210,11 +224,6 @@ public class MainActivity
         sendNotesToListFragment(listNotesFragment);
     }
 
-//    @Override
-    public void markNoteImportant(Note note) {
-
-    }
-
     private Fragment getFragmentByTag(String tag) {
         return getSupportFragmentManager().findFragmentByTag(tag);
     }
@@ -234,7 +243,7 @@ public class MainActivity
         super.onBackPressed();
         if (isLandscape) {
             int backStackEntryCount = getSupportFragmentManager().getBackStackEntryCount();
-            if (backStackEntryCount == 0 || (noteFragment != null && backStackEntryCount == 1) ) {
+            if (backStackEntryCount == 0 || (noteFragment != null && backStackEntryCount == 1)) {
                 initListFragment();
             }
         }

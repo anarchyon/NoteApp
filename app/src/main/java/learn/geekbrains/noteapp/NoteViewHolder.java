@@ -48,6 +48,8 @@ public class NoteViewHolder extends RecyclerView.ViewHolder {
         date.setText(note.getCreationDate());
         if (note.getIsImportant() != 0) {
             isImportant.setImageResource(R.drawable.ic_btn_toggle_on_24);
+        } else {
+            isImportant.setImageDrawable(null);
         }
     }
 
