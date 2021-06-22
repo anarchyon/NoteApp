@@ -3,48 +3,73 @@ package learn.geekbrains.noteapp;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.os.Parcelable;
-import android.view.Menu;
-import android.view.MenuItem;
+import android.util.Log;
 import android.widget.Toast;
 
 import com.google.android.material.bottomappbar.BottomAppBar;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.google.android.material.navigation.NavigationView;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import androidx.annotation.NonNull;
-import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
+import androidx.lifecycle.LifecycleObserver;
+import androidx.lifecycle.LifecycleOwner;
 
-public class MainActivity extends AppCompatActivity implements ListNotesFragment.Contract, NoteFragment.Contract {
+public class MainActivity
+        extends AppCompatActivity
+        implements
+        ListNotesFragment.Contract,
+        NoteFragment.Contract,
+        BottomNavigationDrawer.NavController {
+
     public static final String KEY_NOTE = "key_note";
     private static final String KEY_LIST_NOTES = "key_list_notes";
-    private static final String NOTE_LIST_FRAGMENT_TAG = "list_fragment";
     private List<Note> notes;
     private Note note = null;
+    private boolean isLandscape;
+    private BottomAppBar bottomAppBar;
+    private FloatingActionButton fab;
+    private final LifecycleObserver noteFragmentObserver =
+            new FragmentObserver(this::initBottomAppBarByNoteFragment);
+    private final LifecycleObserver noteListFragmentObserver =
+            new FragmentObserver(this::initBottomAppBarByNoteListFragment);
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        initToolbarAndNavigationDrawer();
-        initFab();
+        initBottomAppBar();
         loadStates(savedInstanceState);
-        initListNotes();
-
-        if (note != null) showNote(note);
+        initListFragment();
     }
 
-    private void initFab() {
-        FloatingActionButton fab = findViewById(R.id.fab_popup_menu);
-        fab.setOnClickListener(v -> {
-            showNote(null);
-        });
+    private void initBottomAppBarByNoteListFragment(boolean isFragmentActive) {
+        if (isFragmentActive) {
+            bottomAppBar.setNavigationIcon(R.drawable.ic_baseline_menu_24);
+            bottomAppBar.getMenu().findItem(R.id.menu_main_search_button).setVisible(true);
+            fab.setImageResource(R.drawable.ic_baseline_add_24);
+            fab.setOnClickListener(view1 -> showNote(null));
+        } else {
+            bottomAppBar.getMenu().findItem(R.id.menu_main_search_button).setVisible(false);
+            bottomAppBar.setNavigationIcon(null);
+            fab.setImageResource(R.drawable.ic_baseline_reply_24);
+            fab.setOnClickListener(view -> onBackPressed());
+        }
+    }
+
+    private void initBottomAppBarByNoteFragment(boolean isFragmentActive) {
+        if (isFragmentActive) {
+            bottomAppBar.getMenu().findItem(R.id.menu_bottom_delete_note).setVisible(true);
+            bottomAppBar.getMenu().findItem(R.id.menu_bottom_save_note).setVisible(true);
+        } else {
+            bottomAppBar.getMenu().findItem(R.id.menu_bottom_delete_note).setVisible(false);
+            bottomAppBar.getMenu().findItem(R.id.menu_bottom_save_note).setVisible(false);
+        }
     }
 
     private void loadStates(Bundle savedInstanceState) {
@@ -56,55 +81,74 @@ public class MainActivity extends AppCompatActivity implements ListNotesFragment
         if (notes == null) notes = TemporaryClassNotes.getNotes();
     }
 
-    private void initListNotes() {
+    private void initListFragment() {
+        isLandscape = getResources().getConfiguration().orientation
+                == Configuration.ORIENTATION_LANDSCAPE;
+
+        if (isLandscape) {
+            getSupportFragmentManager()
+                    .beginTransaction()
+                    .replace(R.id.fragment_root_container, new RootLandFragment(), RootLandFragment.TAG)
+                    .commit();
+        }
+
         clearBackStack();
+        ListNotesFragment listNotesFragment = ListNotesFragment.newInstance(notes);
+        listNotesFragment.getLifecycle().addObserver(noteListFragmentObserver);
         getSupportFragmentManager()
                 .beginTransaction()
-                .replace(R.id.fragment_container, ListNotesFragment.newInstance(notes), NOTE_LIST_FRAGMENT_TAG)
+                .replace(
+                        R.id.fragment_main_container,
+                        listNotesFragment,
+                        ListNotesFragment.TAG
+                )
+                .commit();
+
+        if (note != null) showNote(note);
+    }
+
+
+    private void initSettingsFragment() {
+        getSupportFragmentManager()
+                .beginTransaction()
+                .replace(
+                        isLandscape ?
+                                R.id.fragment_root_container :
+                                R.id.fragment_main_container,
+                        new SettingsFragment()
+                )
+                .addToBackStack(null)
                 .commit();
     }
 
-    private void initToolbarAndNavigationDrawer() {
-        BottomAppBar bottomAppBar = findViewById(R.id.bottom_menu);
-        setSupportActionBar(bottomAppBar);
-        DrawerLayout drawerLayout = findViewById(R.id.drawer_menu);
-        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawerLayout, bottomAppBar, R.string.nav_drawer_open, R.string.nav_drawer_close);
-        drawerLayout.addDrawerListener(toggle);
-        toggle.syncState();
-
-        addListenerToNavigationDrawer();
+    private void initAboutFragment() {
+        getSupportFragmentManager()
+                .beginTransaction()
+                .replace(
+                        isLandscape ?
+                                R.id.fragment_root_container :
+                                R.id.fragment_main_container,
+                        new AboutFragment()
+                )
+                .addToBackStack(null)
+                .commit();
     }
 
-    private void addListenerToNavigationDrawer() {
-        NavigationView navigationView = findViewById(R.id.nav_view);
-        navigationView.setNavigationItemSelectedListener(item -> {
-            int itemId = item.getItemId();
-            if (itemId == R.id.nav_menu_home) {
-                Toast.makeText(this, "главная страница", Toast.LENGTH_LONG).show();
-            } else if (itemId == R.id.nav_menu_about) {
-                Toast.makeText(this, "о приложении", Toast.LENGTH_LONG).show();
-            } else if (itemId == R.id.menu_settings) {
-                Toast.makeText(this, "окно настроек", Toast.LENGTH_LONG).show();
-            } else if (itemId == R.id.menu_important) {
-                Toast.makeText(this, "открыть список важных заметок", Toast.LENGTH_LONG).show();
-            }
-            return true;
+    private void initListImportantFragment() {
+        Toast.makeText(this, R.string.important, Toast.LENGTH_SHORT).show();
+    }
+
+    private void initBottomAppBar() {
+        bottomAppBar = findViewById(R.id.bottom_menu);
+        bottomAppBar.setNavigationIcon(null);
+        fab = findViewById(R.id.fab);
+        fab.setImageResource(R.drawable.ic_baseline_reply_24);
+        fab.setOnClickListener(view -> onBackPressed());
+
+        bottomAppBar.setNavigationOnClickListener(view -> {
+            BottomNavigationDrawer bottomNavigationDrawer = new BottomNavigationDrawer();
+            bottomNavigationDrawer.show(getSupportFragmentManager(), BottomNavigationDrawer.TAG);
         });
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.main, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        int itemId = item.getItemId();
-        if (itemId == R.id.menu_main_search_button) {
-            Toast.makeText(this, "тут будет поиск", Toast.LENGTH_LONG).show();
-        }
-        return true;
     }
 
     @Override
@@ -115,8 +159,7 @@ public class MainActivity extends AppCompatActivity implements ListNotesFragment
     }
 
     @Override
-    public void getNoteAndShow(Note note) {
-        this.note = note;
+    public void showReceivedNote(Note note) {
         showNote(note);
     }
 
@@ -128,29 +171,54 @@ public class MainActivity extends AppCompatActivity implements ListNotesFragment
     }
 
     private void showNote(Note note) {
-        boolean isLandscape = getResources().getConfiguration().orientation
-                == Configuration.ORIENTATION_LANDSCAPE;
-        int fragmentIdForNote = isLandscape ? R.id.fragment_note_details : R.id.fragment_container;
-
         clearBackStack();
+        this.note = note;
 
+        NoteFragment noteFragment = NoteFragment.newInstance(note);
+        noteFragment.getLifecycle().addObserver(noteFragmentObserver);
         getSupportFragmentManager()
                 .beginTransaction()
-                .replace(fragmentIdForNote, NoteFragment.newInstance(note))
+                .replace(
+                        isLandscape ?
+                                R.id.fragment_additional_container :
+                                R.id.fragment_main_container,
+                        noteFragment,
+                        NoteFragment.TAG
+                )
                 .addToBackStack(null)
                 .commit();
     }
 
     @Override
     public void saveNote(Note note) {
+        this.note = null;
         clearBackStack();
         ListNotesFragment listNotesFragment =
-                (ListNotesFragment) getSupportFragmentManager()
-                .findFragmentByTag(NOTE_LIST_FRAGMENT_TAG);
+                (ListNotesFragment) getFragmentByTag(ListNotesFragment.TAG);
 
         notes.remove(note);
         notes.add(note);
 
+        sendNotesToListFragment(listNotesFragment);
+    }
+
+    @Override
+    public void deleteNote(Note note) {
+        this.note = null;
+        clearBackStack();
+        ListNotesFragment listNotesFragment =
+                (ListNotesFragment) getFragmentByTag(ListNotesFragment.TAG);
+
+        notes.remove(note);
+
+        sendNotesToListFragment(listNotesFragment);
+    }
+
+    private Fragment getFragmentByTag(String tag) {
+        return getSupportFragmentManager().findFragmentByTag(tag);
+    }
+
+    private void sendNotesToListFragment(ListNotesFragment listNotesFragment) {
         if (listNotesFragment != null) {
             listNotesFragment.setNotes(notes);
         }
@@ -158,7 +226,30 @@ public class MainActivity extends AppCompatActivity implements ListNotesFragment
 
     @Override
     public void onBackPressed() {
-        note = null;
+        NoteFragment noteFragment = (NoteFragment) getFragmentByTag(NoteFragment.TAG);
+        if (noteFragment != null && noteFragment.isVisible()) {
+            note = null;
+        }
         super.onBackPressed();
+        if (isLandscape) {
+            int backStackEntryCount = getSupportFragmentManager().getBackStackEntryCount();
+            if (backStackEntryCount == 0 || (noteFragment != null && backStackEntryCount == 1)) {
+                initListFragment();
+            }
+        }
+    }
+
+    @Override
+    public void showFragment(int idFragment) {
+        if (idFragment == R.id.nav_menu_important) {
+            initListImportantFragment();
+        } else if (idFragment == R.id.nav_menu_settings) {
+            initSettingsFragment();
+        } else if (idFragment == R.id.nav_menu_about) {
+            initAboutFragment();
+        } else if (idFragment == R.id.nav_menu_home) {
+            note = null;
+            initListFragment();
+        }
     }
 }

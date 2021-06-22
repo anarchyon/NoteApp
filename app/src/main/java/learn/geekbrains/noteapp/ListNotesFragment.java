@@ -1,31 +1,40 @@
 package learn.geekbrains.noteapp;
 
+import android.content.Context;
 import android.content.res.Configuration;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.LifecycleObserver;
+import androidx.lifecycle.LifecycleOwner;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.os.Parcelable;
+import android.util.Log;
+import android.view.ContextMenu;
 import android.view.LayoutInflater;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
+
+import com.google.android.material.bottomappbar.BottomAppBar;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class ListNotesFragment extends Fragment {
     private static final String ARG_NOTES = "notes";
-
+    public static final String TAG = "list_fragment";
     private List<Note> notes;
     private RecyclerView recyclerView;
     private NoteAdapter adapter;
-
-    public ListNotesFragment() {
-    }
 
     public static ListNotesFragment newInstance(List<Note> notes) {
         ListNotesFragment listNotesFragment = new ListNotesFragment();
@@ -38,7 +47,7 @@ public class ListNotesFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
+        if (getArguments() != null && getArguments().containsKey(ARG_NOTES)) {
             notes = getArguments().getParcelableArrayList(ARG_NOTES);
         } else {
             notes = TemporaryClassNotes.getNotes();
@@ -46,7 +55,8 @@ public class ListNotesFragment extends Fragment {
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+    public View onCreateView(LayoutInflater inflater,
+                             ViewGroup container,
                              Bundle savedInstanceState) {
         View listNotes = inflater.inflate(R.layout.fragment_list_notes, container, false);
         recyclerView = listNotes.findViewById(R.id.recycler_view_note_list);
@@ -54,9 +64,10 @@ public class ListNotesFragment extends Fragment {
     }
 
     @Override
-    public void onViewCreated(View view, Bundle savedInstanceState) {
-        adapter = new NoteAdapter();
-        adapter.setOnItemClickListener(getContract()::getNoteAndShow);
+    public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
+        setMenuListener();
+        adapter = new NoteAdapter(this);
+        adapter.setOnItemClickListener(getContract()::showReceivedNote);
         boolean isLandscape =
                 getResources().getConfiguration().orientation
                         == Configuration.ORIENTATION_LANDSCAPE;
@@ -68,11 +79,32 @@ public class ListNotesFragment extends Fragment {
         recyclerView.setAdapter(adapter);
         super.onViewCreated(view, savedInstanceState);
         renderList();
+
+    }
+
+    private void setMenuListener() {
+        BottomAppBar bottomAppBar = requireActivity().findViewById(R.id.bottom_menu);
+        if (bottomAppBar != null) {
+
+            bottomAppBar.setOnMenuItemClickListener(item -> {
+                int itemId = item.getItemId();
+                if (itemId == R.id.menu_main_search_button) {
+                    Toast.makeText(getContext(), "тут будет поиск", Toast.LENGTH_LONG).show();
+                    return true;
+                }
+                return false;
+            });
+        }
     }
 
     private void renderList() {
         adapter.setData(notes);
         adapter.notifyDataSetChanged();
+        recyclerView.scrollToPosition(notes.size() - 1);
+    }
+
+    private void renderListChangeItem() {
+
     }
 
     public void setNotes(List<Note> notes) {
@@ -81,10 +113,57 @@ public class ListNotesFragment extends Fragment {
     }
 
     public interface Contract {
-        void getNoteAndShow(Note note);
+        void showReceivedNote(Note note);
+
+        void deleteNote(Note note);
+
+        void saveNote(Note note);
     }
 
     private Contract getContract() {
         return (Contract) getActivity();
+    }
+
+    @Override
+    public void onAttach(@NonNull Context context) {
+        super.onAttach(context);
+        if (!(context instanceof Contract)) {
+            throw new IllegalStateException(
+                    "Activity must implements ListNotesFragment.Contract"
+            );
+        }
+    }
+
+    @Override
+    public void onCreateContextMenu(@NonNull ContextMenu menu,
+                                    @NonNull View v,
+                                    @Nullable ContextMenu.ContextMenuInfo menuInfo) {
+        super.onCreateContextMenu(menu, v, menuInfo);
+        MenuInflater inflater = requireActivity().getMenuInflater();
+        inflater.inflate(R.menu.context_menu, menu);
+        Note newNote = adapter.getNote();
+        if (newNote.getIsImportant() == 0) {
+            menu.removeItem(R.id.menu_context_set_not_important);
+        } else {
+            menu.removeItem(R.id.menu_context_set_important);
+        }
+    }
+
+    @Override
+    public boolean onContextItemSelected(@NonNull MenuItem item) {
+        int itemId = item.getItemId();
+        Note newNote = adapter.getNote();
+        if (itemId == R.id.menu_context_delete) {
+            getContract().deleteNote(newNote);
+        } else if (itemId == R.id.menu_context_open_note) {
+            getContract().showReceivedNote(newNote);
+        } else if (itemId == R.id.menu_context_set_important) {
+            newNote.setIsImportant(Note.NOTE_IMPORTANT);
+            getContract().saveNote(newNote);
+        } else if (itemId == R.id.menu_context_set_not_important) {
+            newNote.setIsImportant(Note.NOTE_NOT_IMPORTANT);
+            getContract().saveNote(newNote);
+        }
+        return super.onContextItemSelected(item);
     }
 }
