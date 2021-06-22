@@ -8,8 +8,10 @@ import androidx.appcompat.widget.AppCompatEditText;
 import androidx.appcompat.widget.AppCompatTextView;
 import androidx.appcompat.widget.AppCompatToggleButton;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.LifecycleOwner;
 
 import android.text.Editable;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -27,10 +29,6 @@ public class NoteFragment extends Fragment {
     private AppCompatEditText subjectNote, textNote;
     private AppCompatTextView creationDate;
     private AppCompatToggleButton isImportant;
-    private BottomAppBar bottomAppBar;
-
-    public NoteFragment() {
-    }
 
     public static NoteFragment newInstance(Note note) {
         NoteFragment fragment = new NoteFragment();
@@ -75,9 +73,8 @@ public class NoteFragment extends Fragment {
     }
 
     private void setMenuListener() {
-        bottomAppBar = requireActivity().findViewById(R.id.bottom_menu);
+        BottomAppBar bottomAppBar = requireActivity().findViewById(R.id.bottom_menu);
         if (bottomAppBar != null) {
-            initBottomAppBarAndFabState();
 
             bottomAppBar.setOnMenuItemClickListener(item -> {
                 int itemId = item.getItemId();
@@ -91,20 +88,6 @@ public class NoteFragment extends Fragment {
                 return false;
             });
         }
-    }
-
-    private void initBottomAppBarAndFabState() {
-        bottomAppBar.getMenu().findItem(R.id.menu_bottom_delete_note).setVisible(true);
-        bottomAppBar.getMenu().findItem(R.id.menu_bottom_save_note).setVisible(true);
-    }
-
-    @Override
-    public void onStop() {
-        if (bottomAppBar != null) {
-            bottomAppBar.getMenu().findItem(R.id.menu_bottom_delete_note).setVisible(false);
-            bottomAppBar.getMenu().findItem(R.id.menu_bottom_save_note).setVisible(false);
-        }
-        super.onStop();
     }
 
     private Note gatherNote() {

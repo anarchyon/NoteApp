@@ -3,6 +3,7 @@ package learn.geekbrains.noteapp;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.os.Parcelable;
+import android.util.Log;
 import android.widget.Toast;
 
 import com.google.android.material.bottomappbar.BottomAppBar;
@@ -15,6 +16,8 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
+import androidx.lifecycle.LifecycleObserver;
+import androidx.lifecycle.LifecycleOwner;
 
 public class MainActivity
         extends AppCompatActivity
@@ -28,6 +31,12 @@ public class MainActivity
     private List<Note> notes;
     private Note note = null;
     private boolean isLandscape;
+    private BottomAppBar bottomAppBar;
+    private FloatingActionButton fab;
+    private final LifecycleObserver noteFragmentObserver =
+            new FragmentObserver(this::initBottomAppBarByNoteFragment);
+    private final LifecycleObserver noteListFragmentObserver =
+            new FragmentObserver(this::initBottomAppBarByNoteListFragment);
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,6 +46,30 @@ public class MainActivity
         initBottomAppBar();
         loadStates(savedInstanceState);
         initListFragment();
+    }
+
+    private void initBottomAppBarByNoteListFragment(boolean isFragmentActive) {
+        if (isFragmentActive) {
+            bottomAppBar.setNavigationIcon(R.drawable.ic_baseline_menu_24);
+            bottomAppBar.getMenu().findItem(R.id.menu_main_search_button).setVisible(true);
+            fab.setImageResource(R.drawable.ic_baseline_add_24);
+            fab.setOnClickListener(view1 -> showNote(null));
+        } else {
+            bottomAppBar.getMenu().findItem(R.id.menu_main_search_button).setVisible(false);
+            bottomAppBar.setNavigationIcon(null);
+            fab.setImageResource(R.drawable.ic_baseline_reply_24);
+            fab.setOnClickListener(view -> onBackPressed());
+        }
+    }
+
+    private void initBottomAppBarByNoteFragment(boolean isFragmentActive) {
+        if (isFragmentActive) {
+            bottomAppBar.getMenu().findItem(R.id.menu_bottom_delete_note).setVisible(true);
+            bottomAppBar.getMenu().findItem(R.id.menu_bottom_save_note).setVisible(true);
+        } else {
+            bottomAppBar.getMenu().findItem(R.id.menu_bottom_delete_note).setVisible(false);
+            bottomAppBar.getMenu().findItem(R.id.menu_bottom_save_note).setVisible(false);
+        }
     }
 
     private void loadStates(Bundle savedInstanceState) {
@@ -60,11 +93,13 @@ public class MainActivity
         }
 
         clearBackStack();
+        ListNotesFragment listNotesFragment = ListNotesFragment.newInstance(notes);
+        listNotesFragment.getLifecycle().addObserver(noteListFragmentObserver);
         getSupportFragmentManager()
                 .beginTransaction()
                 .replace(
                         R.id.fragment_main_container,
-                        ListNotesFragment.newInstance(notes),
+                        listNotesFragment,
                         ListNotesFragment.TAG
                 )
                 .commit();
@@ -104,7 +139,11 @@ public class MainActivity
     }
 
     private void initBottomAppBar() {
-        BottomAppBar bottomAppBar = findViewById(R.id.bottom_menu);
+        bottomAppBar = findViewById(R.id.bottom_menu);
+        bottomAppBar.setNavigationIcon(null);
+        fab = findViewById(R.id.fab);
+        fab.setImageResource(R.drawable.ic_baseline_reply_24);
+        fab.setOnClickListener(view -> onBackPressed());
 
         bottomAppBar.setNavigationOnClickListener(view -> {
             BottomNavigationDrawer bottomNavigationDrawer = new BottomNavigationDrawer();
@@ -135,13 +174,15 @@ public class MainActivity
         clearBackStack();
         this.note = note;
 
+        NoteFragment noteFragment = NoteFragment.newInstance(note);
+        noteFragment.getLifecycle().addObserver(noteFragmentObserver);
         getSupportFragmentManager()
                 .beginTransaction()
                 .replace(
                         isLandscape ?
                                 R.id.fragment_additional_container :
                                 R.id.fragment_main_container,
-                        NoteFragment.newInstance(note),
+                        noteFragment,
                         NoteFragment.TAG
                 )
                 .addToBackStack(null)
@@ -150,6 +191,7 @@ public class MainActivity
 
     @Override
     public void saveNote(Note note) {
+        this.note = null;
         clearBackStack();
         ListNotesFragment listNotesFragment =
                 (ListNotesFragment) getFragmentByTag(ListNotesFragment.TAG);
@@ -162,6 +204,7 @@ public class MainActivity
 
     @Override
     public void deleteNote(Note note) {
+        this.note = null;
         clearBackStack();
         ListNotesFragment listNotesFragment =
                 (ListNotesFragment) getFragmentByTag(ListNotesFragment.TAG);
