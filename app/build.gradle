@@ -7,7 +7,7 @@ android {
     compileSdkVersion 30
 
     defaultConfig {
-        applicationId "learn.geekbrains.noteapp"
+        applicationId "project.paveltoy.noteapp"
         minSdkVersion 23
         targetSdkVersion 30
         versionCode 1

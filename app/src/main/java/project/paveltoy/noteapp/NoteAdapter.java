@@ -1,9 +1,8 @@
-package learn.geekbrains.noteapp;
+package project.paveltoy.noteapp;
 
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.Filter;
 import android.widget.Filterable;
 

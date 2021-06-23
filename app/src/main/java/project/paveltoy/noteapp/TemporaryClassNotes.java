@@ -1,4 +1,4 @@
-package learn.geekbrains.noteapp;
+package project.paveltoy.noteapp;
 
 import java.util.ArrayList;
 import java.util.List;

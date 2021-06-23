@@ -1,4 +1,4 @@
-package learn.geekbrains.noteapp;
+package project.paveltoy.noteapp;
 
 import android.content.Context;
 import android.os.Bundle;
@@ -8,19 +8,14 @@ import androidx.appcompat.widget.AppCompatEditText;
 import androidx.appcompat.widget.AppCompatTextView;
 import androidx.appcompat.widget.AppCompatToggleButton;
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.LifecycleOwner;
 
 import android.text.Editable;
-import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
 import com.google.android.material.bottomappbar.BottomAppBar;
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 public class NoteFragment extends Fragment {
     public static final String TAG = "note_fragment";
