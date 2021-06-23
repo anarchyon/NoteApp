@@ -1,9 +1,8 @@
-package learn.geekbrains.noteapp;
+package project.paveltoy.noteapp;
 
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.os.Parcelable;
-import android.util.Log;
 import android.widget.Toast;
 
 import com.google.android.material.bottomappbar.BottomAppBar;
@@ -17,7 +16,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.LifecycleObserver;
-import androidx.lifecycle.LifecycleOwner;
 
 public class MainActivity
         extends AppCompatActivity

@@ -1,4 +1,4 @@
-package learn.geekbrains.noteapp;
+package project.paveltoy.noteapp;
 
 import androidx.lifecycle.Lifecycle;
 import androidx.lifecycle.LifecycleObserver;

@@ -1,13 +1,10 @@
-package learn.geekbrains.noteapp;
+package project.paveltoy.noteapp;
 
 import android.view.View;
-import android.widget.ToggleButton;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.widget.AppCompatImageView;
 import androidx.appcompat.widget.AppCompatTextView;
-import androidx.appcompat.widget.AppCompatToggleButton;
-import androidx.cardview.widget.CardView;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.RecyclerView;
 
