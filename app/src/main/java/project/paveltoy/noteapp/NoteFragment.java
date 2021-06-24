@@ -17,6 +17,9 @@ import android.widget.Toast;
 
 import com.google.android.material.bottomappbar.BottomAppBar;
 
+import java.text.SimpleDateFormat;
+import java.util.Locale;
+
 public class NoteFragment extends Fragment {
     public static final String TAG = "note_fragment";
     private static final String ARG_NOTE = "note";
@@ -87,15 +90,13 @@ public class NoteFragment extends Fragment {
     private Note gatherNote() {
         String subject = getStringFromField(subjectNote.getText());
         String text = getStringFromField(textNote.getText());
-        boolean isNoteImportant = isImportant.isChecked();
-        Note newNote = new Note(
-                note == null ? Note.generateNewId() : note.getId(),
+        return new Note(
+                note == null ? null : note.getId(),
                 subject,
                 text,
-                note == null ? Note.getCurrentDate() : note.getCreationDate()
+                note == null ? Note.getCurrentDate() : note.getCreationDate(),
+                isImportant.isChecked() ? Note.NOTE_IMPORTANT : Note.NOTE_NOT_IMPORTANT
         );
-        newNote.setIsImportant(isNoteImportant ? Note.NOTE_IMPORTANT : Note.NOTE_NOT_IMPORTANT);
-        return newNote;
     }
 
     private String getStringFromField(Editable fieldContent) {
@@ -109,7 +110,9 @@ public class NoteFragment extends Fragment {
         if (note == null) return;
         subjectNote.setText(note.getName());
         textNote.setText(note.getText());
-        creationDate.setText(note.getCreationDate());
+        String dateString = new SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.getDefault())
+                .format(note.getCreationDate());
+        creationDate.setText(dateString);
         if (note.getIsImportant() != 0) {
             isImportant.setChecked(true);
         }
