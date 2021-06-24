@@ -5,6 +5,7 @@ import android.os.Parcelable;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.Locale;
 import java.util.Objects;
 import java.util.UUID;
@@ -13,31 +14,31 @@ public class Note implements Parcelable {
     public static final int NOTE_IMPORTANT = 1;
     public static final int NOTE_NOT_IMPORTANT = 0;
 
-    private final String id;
+    private String id;
     private String name;
     private String text;
-    private String creationDate;
+    private Date creationDate;
     private int isImportant;
 
-    public static String getCurrentDate() {
-        return new SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.getDefault()).format(Calendar.getInstance().getTime());
+    public static Date getCurrentDate() {
+        return Calendar.getInstance().getTime();
     }
     public static String generateNewId() {
         return UUID.randomUUID().toString();
     }
 
-    public Note(String id, String name, String text, String creationDate) {
+    public Note(String id, String name, String text, Date creationDate, int isImportant) {
         this.id = id;
         this.name = name;
         this.text = text;
         this.creationDate = creationDate;
-        isImportant = NOTE_NOT_IMPORTANT;
+        this.isImportant = isImportant;
     }
 
     protected Note(Parcel in) {
         name = in.readString();
         text = in.readString();
-        creationDate = in.readString();
+        creationDate = new Date(in.readLong());
         id = in.readString();
         isImportant = in.readInt();
     }
@@ -62,7 +63,7 @@ public class Note implements Parcelable {
         return text;
     }
 
-    public String getCreationDate() {
+    public Date getCreationDate() {
         return creationDate;
     }
 
@@ -78,7 +79,7 @@ public class Note implements Parcelable {
         this.isImportant = isImportant;
     }
 
-    public void setCreationDate(String creationDate) {
+    public void setCreationDate(Date creationDate) {
         this.creationDate = creationDate;
     }
 
@@ -99,7 +100,7 @@ public class Note implements Parcelable {
     public void writeToParcel(Parcel parcel, int i) {
         parcel.writeString(getName());
         parcel.writeString(getText());
-        parcel.writeString(getCreationDate());
+        parcel.writeLong(getCreationDate().getTime());
         parcel.writeString(getId());
         parcel.writeInt(getIsImportant());
     }
@@ -115,5 +116,9 @@ public class Note implements Parcelable {
     @Override
     public int hashCode() {
         return Objects.hash(id);
+    }
+
+    public void setId(String id) {
+        this.id = id;
     }
 }

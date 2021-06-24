@@ -14,16 +14,17 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.RecyclerView;
 
 public class NoteAdapter extends RecyclerView.Adapter<NoteViewHolder> implements Filterable {
-    private List<Note> data = new ArrayList<>();
+    private NoteService data;
     private Note note;
     private OnItemClickListener onItemClickListener;
     private final Fragment fragment;
+    private int itemPosition;
 
     public NoteAdapter(Fragment fragment) {
         this.fragment = fragment;
     }
 
-    public void setData(List<Note> data) {
+    public void setData(NoteService data) {
         this.data = data;
     }
 
@@ -49,10 +50,10 @@ public class NoteAdapter extends RecyclerView.Adapter<NoteViewHolder> implements
 
     @Override
     public void onBindViewHolder(@NonNull NoteViewHolder holder, int position) {
-        if (position < data.size()) {
-               holder.bind(data.get(position));
-               holder.setSendIdLongClickedItem(this::setNote);
-        }
+//        if (position < data.size()) {
+               holder.bind(data.getNote(position));
+               holder.setSendIdLongClickedItem(this::setItemPosition);
+//        }
     }
 
     @Override
@@ -60,11 +61,11 @@ public class NoteAdapter extends RecyclerView.Adapter<NoteViewHolder> implements
         return data.size();
     }
 
-    public void setNote(int index) {
-        this.note = data.get(index);
+    public void setItemPosition(int itemPosition) {
+        this.itemPosition = itemPosition;
     }
 
-    public Note getNote() {
-        return note;
+    public int getItemPosition() {
+        return itemPosition;
     }
 }

@@ -2,6 +2,9 @@ package project.paveltoy.noteapp;
 
 import android.view.View;
 
+import java.text.SimpleDateFormat;
+import java.util.Locale;
+
 import androidx.annotation.NonNull;
 import androidx.appcompat.widget.AppCompatImageView;
 import androidx.appcompat.widget.AppCompatTextView;
@@ -32,7 +35,7 @@ public class NoteViewHolder extends RecyclerView.ViewHolder {
 
         if (fragment != null) {
             itemView.setOnLongClickListener(view -> {
-                sendIdLongClickedItem.sendId(getLayoutPosition());
+                sendIdLongClickedItem.sendItemPosition(getLayoutPosition());
                 return false;
             });
             fragment.registerForContextMenu(itemView);
@@ -42,7 +45,9 @@ public class NoteViewHolder extends RecyclerView.ViewHolder {
     public void bind(Note note) {
         this.note = note;
         header.setText(note.getName());
-        date.setText(note.getCreationDate());
+        String dateString = new SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.getDefault())
+                .format(note.getCreationDate());
+        date.setText(dateString);
         if (note.getIsImportant() != 0) {
             isImportant.setImageResource(R.drawable.ic_btn_toggle_on_24);
         } else {
@@ -51,7 +56,7 @@ public class NoteViewHolder extends RecyclerView.ViewHolder {
     }
 
     interface sendIdLongClickedItem {
-        void sendId(int position);
+        void sendItemPosition(int position);
     }
 
     public void setSendIdLongClickedItem(NoteViewHolder.sendIdLongClickedItem sendIdLongClickedItem) {

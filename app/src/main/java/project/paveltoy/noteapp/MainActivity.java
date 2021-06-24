@@ -20,13 +20,13 @@ import androidx.lifecycle.LifecycleObserver;
 public class MainActivity
         extends AppCompatActivity
         implements
-        ListNotesFragment.Contract,
+        NoteListFragment.Contract,
         NoteFragment.Contract,
         BottomNavigationDrawer.NavController {
 
     public static final String KEY_NOTE = "key_note";
     private static final String KEY_LIST_NOTES = "key_list_notes";
-    private List<Note> notes;
+//    private List<Note> notes;
     private Note note = null;
     private boolean isLandscape;
     private BottomAppBar bottomAppBar;
@@ -72,11 +72,11 @@ public class MainActivity
 
     private void loadStates(Bundle savedInstanceState) {
         if (savedInstanceState != null) {
-            notes = savedInstanceState.getParcelableArrayList(KEY_LIST_NOTES);
+//            notes = savedInstanceState.getParcelableArrayList(KEY_LIST_NOTES);
             note = savedInstanceState.getParcelable(KEY_NOTE);
         }
 
-        if (notes == null) notes = TemporaryClassNotes.getNotes();
+//        if (notes == null) notes = TemporaryClassNotes.getNotes();
     }
 
     private void initListFragment() {
@@ -91,14 +91,14 @@ public class MainActivity
         }
 
         clearBackStack();
-        ListNotesFragment listNotesFragment = ListNotesFragment.newInstance(notes);
-        listNotesFragment.getLifecycle().addObserver(noteListFragmentObserver);
+        NoteListFragment noteListFragment = new NoteListFragment();
+        noteListFragment.getLifecycle().addObserver(noteListFragmentObserver);
         getSupportFragmentManager()
                 .beginTransaction()
                 .replace(
                         R.id.fragment_main_container,
-                        listNotesFragment,
-                        ListNotesFragment.TAG
+                        noteListFragment,
+                        NoteListFragment.TAG
                 )
                 .commit();
 
@@ -153,7 +153,7 @@ public class MainActivity
     protected void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putParcelable(KEY_NOTE, note);
-        outState.putParcelableArrayList(KEY_LIST_NOTES, (ArrayList<? extends Parcelable>) notes);
+//        outState.putParcelableArrayList(KEY_LIST_NOTES, (ArrayList<? extends Parcelable>) notes);
     }
 
     @Override
@@ -191,34 +191,32 @@ public class MainActivity
     public void saveNote(Note note) {
         this.note = null;
         clearBackStack();
-        ListNotesFragment listNotesFragment =
-                (ListNotesFragment) getFragmentByTag(ListNotesFragment.TAG);
+        NoteListFragment noteListFragment =
+                (NoteListFragment) getFragmentByTag(NoteListFragment.TAG);
 
-        notes.remove(note);
-        notes.add(note);
-
-        sendNotesToListFragment(listNotesFragment);
+        ((CallbackContract) noteListFragment).saveNote(note);
     }
 
     @Override
     public void deleteNote(Note note) {
         this.note = null;
         clearBackStack();
-        ListNotesFragment listNotesFragment =
-                (ListNotesFragment) getFragmentByTag(ListNotesFragment.TAG);
+        NoteListFragment noteListFragment =
+                (NoteListFragment) getFragmentByTag(NoteListFragment.TAG);
 
-        notes.remove(note);
+        ((CallbackContract) noteListFragment).deleteNote(note);
+//        notes.remove(note);
 
-        sendNotesToListFragment(listNotesFragment);
+//        sendNotesToListFragment(noteListFragment);
     }
 
     private Fragment getFragmentByTag(String tag) {
         return getSupportFragmentManager().findFragmentByTag(tag);
     }
 
-    private void sendNotesToListFragment(ListNotesFragment listNotesFragment) {
-        if (listNotesFragment != null) {
-            listNotesFragment.setNotes(notes);
+    private void sendNotesToListFragment(NoteListFragment noteListFragment) {
+        if (noteListFragment != null) {
+//            noteListFragment.setNotes(notes);
         }
     }
 
