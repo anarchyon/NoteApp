@@ -3,20 +3,16 @@ package project.paveltoy.noteapp;
 import android.content.res.Configuration;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Parcelable;
-import android.view.View;
 import android.widget.Toast;
 
 import com.google.android.material.bottomappbar.BottomAppBar;
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.LifecycleObserver;
-import androidx.lifecycle.Observer;
-import androidx.lifecycle.ViewModelProvider;
 
 public class MainActivity
         extends AppCompatActivity
@@ -207,6 +203,16 @@ public class MainActivity
     public void onBackPressed() {
         NoteFragment noteFragment = (NoteFragment) getFragmentByTag(NoteFragment.TAG);
         if (noteFragment != null && noteFragment.isVisible()) {
+            new MaterialAlertDialogBuilder(this)
+                    .setMessage(R.string.alert_dialog_not_saved_note)
+                    .setNegativeButton(R.string.alert_dialog_close_with_save, (dialogInterface, i) -> {
+
+                    })
+                    .setPositiveButton(R.string.alert_dialog_close_not_save, ((dialogInterface, i) -> {
+
+                    }))
+                    .setCancelable(false)
+                    .show();
             note = null;
         }
         super.onBackPressed();

@@ -16,4 +16,6 @@ public interface NoteService {
     Note getNote(int position);
 
     int size();
+
+    int getPosition(Note note);
 }

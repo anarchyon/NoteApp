@@ -84,4 +84,9 @@ public class FirebaseNoteService implements NoteService {
         if (notes == null) return 0;
         return notes.size();
     }
+
+    @Override
+    public int getPosition(Note note) {
+        return notes.indexOf(note);
+    }
 }
