@@ -6,7 +6,8 @@
     android:layout_height="@dimen/drawer_menu_header_height"
     android:background="@drawable/ic_launcher_background"
     android:padding="@dimen/primary_margin_and_padding"
-    android:theme="@style/ThemeOverlay.AppCompat">
+    android:theme="@style/ThemeOverlay.AppCompat"
+    android:id="@+id/header_view">
 
     <androidx.appcompat.widget.AppCompatImageView
         android:id="@+id/account_image"
@@ -21,7 +22,6 @@
         android:id="@+id/account_name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/drawer_menu_username"
         app:layout_constraintBottom_toTopOf="@id/account_email"
         app:layout_constraintStart_toEndOf="@id/account_image"
         app:layout_constraintTop_toTopOf="@id/account_image" />
@@ -30,7 +30,6 @@
         android:id="@+id/account_email"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/drawer_menu_user_email"
         app:layout_constraintBottom_toBottomOf="@id/account_image"
         app:layout_constraintStart_toEndOf="@id/account_image"
         app:layout_constraintTop_toBottomOf="@+id/account_name" />
