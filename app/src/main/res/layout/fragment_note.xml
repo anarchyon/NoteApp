@@ -38,8 +38,8 @@
 
     <androidx.appcompat.widget.AppCompatToggleButton
         android:id="@+id/toggle_important"
-        android:layout_width="48dp"
-        android:layout_height="48dp"
+        android:layout_width="@dimen/important_label_size"
+        android:layout_height="@dimen/important_label_size"
         android:background="@drawable/toggle_button"
         android:textOff=""
         android:textOn=""

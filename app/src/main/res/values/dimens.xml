@@ -8,4 +8,7 @@
     <dimen name="shown_note_text_size">18sp</dimen>
     <dimen name="card_view_height">100dp</dimen>
     <dimen name="card_view_height_land">50dp</dimen>
+    <dimen name="important_label_size">48dp</dimen>
+    <dimen name="important_label_size_in_item_portrait">24dp</dimen>
+    <dimen name="important_label_size_in_item_land">12dp</dimen>
 </resources>
