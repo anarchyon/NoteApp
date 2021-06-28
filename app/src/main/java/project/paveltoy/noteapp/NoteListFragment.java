@@ -28,24 +28,6 @@ public class NoteListFragment extends Fragment implements CallbackContract {
     private RecyclerView recyclerView;
     private NoteAdapter adapter;
 
-//    public static NoteListFragment newInstance(List<Note> notes) {
-//        NoteListFragment noteListFragment = new NoteListFragment();
-//        Bundle args = new Bundle();
-//        args.putParcelableArrayList(ARG_NOTES, (ArrayList<? extends Parcelable>) notes);
-//        noteListFragment.setArguments(args);
-//        return noteListFragment;
-//    }
-
-//    @Override
-//    public void onCreate(Bundle savedInstanceState) {
-//        super.onCreate(savedInstanceState);
-//        if (getArguments() != null && getArguments().containsKey(ARG_NOTES)) {
-//            notes = getArguments().getParcelableArrayList(ARG_NOTES);
-//        } else {
-//            notes = TemporaryClassNotes.getNotes();
-//        }
-//    }
-
     @Override
     public View onCreateView(LayoutInflater inflater,
                              ViewGroup container,
@@ -71,7 +53,6 @@ public class NoteListFragment extends Fragment implements CallbackContract {
         recyclerView.setAdapter(adapter);
         super.onViewCreated(view, savedInstanceState);
         notes = new FirebaseNoteService().init(notes -> adapter.notifyDataSetChanged());
-//        getContract().setCallbackContract(this::saveNote);
         renderList();
     }
 
@@ -99,11 +80,6 @@ public class NoteListFragment extends Fragment implements CallbackContract {
     private void renderListChangeItem() {
 
     }
-
-//    public void setNotes(List<Note> notes) {
-//        this.notes = notes;
-//        renderList();
-//    }
 
     public interface Contract {
         void showReceivedNote(Note note);

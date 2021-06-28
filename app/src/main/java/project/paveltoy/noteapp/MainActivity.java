@@ -1,55 +1,93 @@
 package project.paveltoy.noteapp;
 
 import android.content.res.Configuration;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Parcelable;
+import android.view.View;
 import android.widget.Toast;
 
 import com.google.android.material.bottomappbar.BottomAppBar;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
-
-import java.util.ArrayList;
-import java.util.List;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.LifecycleObserver;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProvider;
 
 public class MainActivity
         extends AppCompatActivity
         implements
         NoteListFragment.Contract,
         NoteFragment.Contract,
-        BottomNavigationDrawer.NavController {
+        BottomNavigationDrawer.NavController,
+        SignInFragment.SignInController {
 
+    private static final String KEY_USER_SIGN_STATUS = "sign_status";
     public static final String KEY_NOTE = "key_note";
-    private static final String KEY_LIST_NOTES = "key_list_notes";
-//    private List<Note> notes;
+
+    private Navigation navigation;
     private Note note = null;
     private boolean isLandscape;
+    private boolean isUserSignedIn = false;
+    private String userName = null;
+    private String userEmail = null;
+    private Uri userImage = null;
     private BottomAppBar bottomAppBar;
     private FloatingActionButton fab;
     private final LifecycleObserver noteFragmentObserver =
             new FragmentObserver(this::initBottomAppBarByNoteFragment);
     private final LifecycleObserver noteListFragmentObserver =
             new FragmentObserver(this::initBottomAppBarByNoteListFragment);
+    private final LifecycleObserver signInFragmentObserver =
+            new FragmentObserver(this::initBottomAppBarBySignInFragment);
+
+    private Fragment currentFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        navigation = new Navigation(getSupportFragmentManager());
+        initFragmentContainer();
         initBottomAppBar();
         loadStates(savedInstanceState);
-        initListFragment();
+        if (isUserSignedIn) {
+            initListFragment();
+        } else {
+            initSignInFragment(false);
+        }
+    }
+
+    private void loadFragment(Fragment currentFragment) {
+
+    }
+
+    private void initFragmentContainer() {
+        isLandscape = getResources().getConfiguration().orientation
+                == Configuration.ORIENTATION_LANDSCAPE;
+
+        if (isLandscape) {
+            navigation.addFragment(
+                    R.id.fragment_root_container, new RootLandFragment(),
+                    RootLandFragment.TAG, false);
+        }
+
+    }
+
+    private void initBottomAppBarBySignInFragment(boolean isFragmentActive) {
+        fab.hide();
     }
 
     private void initBottomAppBarByNoteListFragment(boolean isFragmentActive) {
         if (isFragmentActive) {
             bottomAppBar.setNavigationIcon(R.drawable.ic_baseline_menu_24);
             bottomAppBar.getMenu().findItem(R.id.menu_main_search_button).setVisible(true);
+            fab.show();
             fab.setImageResource(R.drawable.ic_baseline_add_24);
             fab.setOnClickListener(view1 -> showNote(null));
         } else {
@@ -72,64 +110,31 @@ public class MainActivity
 
     private void loadStates(Bundle savedInstanceState) {
         if (savedInstanceState != null) {
-//            notes = savedInstanceState.getParcelableArrayList(KEY_LIST_NOTES);
             note = savedInstanceState.getParcelable(KEY_NOTE);
+            isUserSignedIn = savedInstanceState.getBoolean(KEY_USER_SIGN_STATUS, false);
         }
+    }
 
-//        if (notes == null) notes = TemporaryClassNotes.getNotes();
+    private void initSignInFragment(boolean addToBackStack) {
+        navigation.clearBackStack();
+        SignInFragment signInFragment = new SignInFragment();
+        signInFragment.getLifecycle().addObserver(signInFragmentObserver);
+        navigation.addFragment(
+                isLandscape ? R.id.fragment_root_container : R.id.fragment_main_container,
+                signInFragment, null, addToBackStack
+        );
     }
 
     private void initListFragment() {
-        isLandscape = getResources().getConfiguration().orientation
-                == Configuration.ORIENTATION_LANDSCAPE;
-
-        if (isLandscape) {
-            getSupportFragmentManager()
-                    .beginTransaction()
-                    .replace(R.id.fragment_root_container, new RootLandFragment(), RootLandFragment.TAG)
-                    .commit();
-        }
-
-        clearBackStack();
+        navigation.clearBackStack();
         NoteListFragment noteListFragment = new NoteListFragment();
         noteListFragment.getLifecycle().addObserver(noteListFragmentObserver);
-        getSupportFragmentManager()
-                .beginTransaction()
-                .replace(
-                        R.id.fragment_main_container,
-                        noteListFragment,
-                        NoteListFragment.TAG
-                )
-                .commit();
+        navigation.addFragment(
+                R.id.fragment_main_container, noteListFragment,
+                NoteListFragment.TAG, false
+        );
 
         if (note != null) showNote(note);
-    }
-
-
-    private void initSettingsFragment() {
-        getSupportFragmentManager()
-                .beginTransaction()
-                .replace(
-                        isLandscape ?
-                                R.id.fragment_root_container :
-                                R.id.fragment_main_container,
-                        new SettingsFragment()
-                )
-                .addToBackStack(null)
-                .commit();
-    }
-
-    private void initAboutFragment() {
-        getSupportFragmentManager()
-                .beginTransaction()
-                .replace(
-                        isLandscape ?
-                                R.id.fragment_root_container :
-                                R.id.fragment_main_container,
-                        new AboutFragment()
-                )
-                .addToBackStack(null)
-                .commit();
     }
 
     private void initListImportantFragment() {
@@ -153,7 +158,8 @@ public class MainActivity
     protected void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putParcelable(KEY_NOTE, note);
-//        outState.putParcelableArrayList(KEY_LIST_NOTES, (ArrayList<? extends Parcelable>) notes);
+        outState.putBoolean(KEY_USER_SIGN_STATUS, isUserSignedIn);
+
     }
 
     @Override
@@ -161,36 +167,22 @@ public class MainActivity
         showNote(note);
     }
 
-    private void clearBackStack() {
-        FragmentManager fragmentManager = getSupportFragmentManager();
-        if (fragmentManager.getBackStackEntryCount() > 0) {
-            fragmentManager.popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
-        }
-    }
-
     private void showNote(Note note) {
-        clearBackStack();
+        navigation.clearBackStack();
         this.note = note;
 
         NoteFragment noteFragment = NoteFragment.newInstance(note);
         noteFragment.getLifecycle().addObserver(noteFragmentObserver);
-        getSupportFragmentManager()
-                .beginTransaction()
-                .replace(
-                        isLandscape ?
-                                R.id.fragment_additional_container :
-                                R.id.fragment_main_container,
-                        noteFragment,
-                        NoteFragment.TAG
-                )
-                .addToBackStack(null)
-                .commit();
+        navigation.addFragment(
+                isLandscape ? R.id.fragment_additional_container : R.id.fragment_main_container,
+                noteFragment, NoteFragment.TAG, true
+        );
     }
 
     @Override
     public void saveNote(Note note) {
         this.note = null;
-        clearBackStack();
+        navigation.clearBackStack();
         NoteListFragment noteListFragment =
                 (NoteListFragment) getFragmentByTag(NoteListFragment.TAG);
 
@@ -200,24 +192,15 @@ public class MainActivity
     @Override
     public void deleteNote(Note note) {
         this.note = null;
-        clearBackStack();
+        navigation.clearBackStack();
         NoteListFragment noteListFragment =
                 (NoteListFragment) getFragmentByTag(NoteListFragment.TAG);
 
         ((CallbackContract) noteListFragment).deleteNote(note);
-//        notes.remove(note);
-
-//        sendNotesToListFragment(noteListFragment);
     }
 
     private Fragment getFragmentByTag(String tag) {
         return getSupportFragmentManager().findFragmentByTag(tag);
-    }
-
-    private void sendNotesToListFragment(NoteListFragment noteListFragment) {
-        if (noteListFragment != null) {
-//            noteListFragment.setNotes(notes);
-        }
     }
 
     @Override
@@ -240,12 +223,48 @@ public class MainActivity
         if (idFragment == R.id.nav_menu_important) {
             initListImportantFragment();
         } else if (idFragment == R.id.nav_menu_settings) {
-            initSettingsFragment();
+            navigation.addFragment(
+                    isLandscape ? R.id.fragment_root_container : R.id.fragment_main_container,
+                    new SettingsFragment(), null, true);
         } else if (idFragment == R.id.nav_menu_about) {
-            initAboutFragment();
+            navigation.addFragment(
+                    isLandscape ? R.id.fragment_root_container : R.id.fragment_main_container,
+                    new AboutFragment(), null, true);
         } else if (idFragment == R.id.nav_menu_home) {
             note = null;
             initListFragment();
+        } else if (idFragment == R.id.header_view) {
+            initSignInFragment(true);
         }
+    }
+
+    @Override
+    public void signedIn(String accountName, String accountEmail, Uri accountImage) {
+        isUserSignedIn = true;
+        userName = accountName;
+        userEmail = accountEmail;
+        userImage = accountImage;
+        initListFragment();
+    }
+
+    @Override
+    public void signedOut() {
+        isUserSignedIn = false;
+        userName = null;
+        userEmail = null;
+        userImage = null;
+        initSignInFragment(false);
+    }
+
+    public String getUserName() {
+        return userName;
+    }
+
+    public String getUserEmail() {
+        return userEmail;
+    }
+
+    public Uri getUserImage() {
+        return userImage;
     }
 }
