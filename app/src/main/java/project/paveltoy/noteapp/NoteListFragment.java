@@ -20,6 +20,8 @@ import android.view.ViewGroup;
 import android.widget.Toast;
 
 import com.google.android.material.bottomappbar.BottomAppBar;
+import com.google.android.material.snackbar.BaseTransientBottomBar;
+import com.google.android.material.snackbar.Snackbar;
 
 public class NoteListFragment extends Fragment implements CallbackContract {
     private static final String ARG_NOTES = "notes";
@@ -27,6 +29,7 @@ public class NoteListFragment extends Fragment implements CallbackContract {
     private NoteService notes;
     private RecyclerView recyclerView;
     private NoteAdapter adapter;
+    View parentView;
 
     @Override
     public View onCreateView(LayoutInflater inflater,
@@ -34,6 +37,7 @@ public class NoteListFragment extends Fragment implements CallbackContract {
                              Bundle savedInstanceState) {
         View listNotes = inflater.inflate(R.layout.fragment_list_notes, container, false);
         recyclerView = listNotes.findViewById(R.id.recycler_view_note_list);
+        parentView = container;
         return listNotes;
     }
 
@@ -75,10 +79,6 @@ public class NoteListFragment extends Fragment implements CallbackContract {
         adapter.setData(notes);
         adapter.notifyDataSetChanged();
         recyclerView.scrollToPosition(notes.size() - 1);
-    }
-
-    private void renderListChangeItem() {
-
     }
 
     public interface Contract {
@@ -142,12 +142,18 @@ public class NoteListFragment extends Fragment implements CallbackContract {
     private void deleteNote(int itemPosition) {
         notes.deleteNote(itemPosition);
         adapter.notifyItemRemoved(itemPosition);
+        Snackbar.make(parentView, R.string.snackbar_delete_note, BaseTransientBottomBar.LENGTH_LONG)
+                .setAnchorView(R.id.fab)
+                .setAction(R.string.snackbar_action_undo, view -> {
+                    // TODO: 28.06.2021
+                })
+                .show();
     }
 
     @Override
     public void deleteNote(Note note) {
         if (note.getId() == null) return;
-        notes.deleteNote(note);
+        deleteNote(notes.getPosition(note));
     }
 
     @Override
