@@ -13,6 +13,7 @@
 *.apk
 *.ap_
 *.aab
+!app/release/note-app-release.apk
 
 # Files for the ART/Dalvik VM
 *.dex
@@ -59,7 +60,7 @@ captures/
 *.keystore
 
 # Google Services (e.g. APIs or Firebase)
-# google-services.json
+google-services.json
 
 # Android Patch
 gen-external-apklibs
