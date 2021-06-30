@@ -245,20 +245,14 @@ public class MainActivity
     }
 
     @Override
-    public void signedIn(String accountName, String accountEmail, Uri accountImage) {
+    public void signedIn() {
         isUserSignedIn = true;
-        userName = accountName;
-        userEmail = accountEmail;
-        userImage = accountImage;
         initListFragment();
     }
 
     @Override
     public void signedOut() {
         isUserSignedIn = false;
-        userName = null;
-        userEmail = null;
-        userImage = null;
         initSignInFragment(false);
     }
 
