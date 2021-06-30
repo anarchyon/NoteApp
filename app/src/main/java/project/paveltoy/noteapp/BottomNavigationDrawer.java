@@ -22,6 +22,7 @@ import androidx.appcompat.content.res.AppCompatResources;
 
 public class BottomNavigationDrawer extends BottomSheetDialogFragment {
     public static final String TAG = "bottom_navigation_drawer";
+    private FirebaseAccountOpenData accountOpenData;
 
     @Nullable
     @Override
@@ -49,39 +50,28 @@ public class BottomNavigationDrawer extends BottomSheetDialogFragment {
         initUserAccountData(headerView);
         navigationView.setNavigationItemSelectedListener(item -> {
             int itemId = item.getItemId();
-            if (itemId == R.id.nav_menu_home) {
-                getNavController().showFragment(R.id.nav_menu_home);
-            } else if (itemId == R.id.nav_menu_important) {
-                getNavController().showFragment(R.id.nav_menu_important);
-            } else if (itemId == R.id.nav_menu_settings) {
-                getNavController().showFragment(R.id.nav_menu_settings);
-            } else if (itemId == R.id.nav_menu_about) {
-                getNavController().showFragment(R.id.nav_menu_about);
-            }
+            getNavController().showFragment(itemId);
             this.dismiss();
             return true;
         });
     }
 
     private void initUserAccountData(View view) {
-        NavController navController = getNavController();
         ImageView userImage = view.findViewById(R.id.account_image);
         TextView userName = view.findViewById(R.id.account_name);
         TextView userEmail = view.findViewById(R.id.account_email);
-        Uri imageUri = navController.getUserImage();
+
+        accountOpenData = FirebaseAccountOpenData.getInstance();
+        Uri imageUri = accountOpenData.getImageUri();
         if (imageUri != null) {
-            userImage.setImageURI(navController.getUserImage());
+            userImage.setImageURI(imageUri);
         }
-        userName.setText(navController.getUserName());
-        userEmail.setText(navController.getUserEmail());
+        userName.setText(accountOpenData.getDisplayName());
+        userEmail.setText(accountOpenData.getEmail());
     }
 
     interface NavController {
         void showFragment(int idFragment);
-
-        Uri getUserImage();
-        String getUserName();
-        String getUserEmail();
     }
 
     private NavController getNavController() {

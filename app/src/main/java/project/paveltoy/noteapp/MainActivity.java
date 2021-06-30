@@ -29,9 +29,6 @@ public class MainActivity
     private Note note = null;
     private boolean isLandscape;
     private boolean isUserSignedIn = false;
-    private String userName = null;
-    private String userEmail = null;
-    private Uri userImage = null;
     private BottomAppBar bottomAppBar;
     private FloatingActionButton fab;
     private final LifecycleObserver noteFragmentObserver =
@@ -41,7 +38,6 @@ public class MainActivity
     private final LifecycleObserver signInFragmentObserver =
             new FragmentObserver(this::initBottomAppBarBySignInFragment);
 
-    private Fragment currentFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,10 +53,6 @@ public class MainActivity
         } else {
             initSignInFragment(false);
         }
-    }
-
-    private void loadFragment(Fragment currentFragment) {
-
     }
 
     private void initFragmentContainer() {
@@ -117,7 +109,7 @@ public class MainActivity
         signInFragment.getLifecycle().addObserver(signInFragmentObserver);
         navigation.addFragment(
                 isLandscape ? R.id.fragment_root_container : R.id.fragment_main_container,
-                signInFragment, null, addToBackStack
+                signInFragment, SignInFragment.TAG, addToBackStack
         );
     }
 
@@ -254,17 +246,5 @@ public class MainActivity
     public void signedOut() {
         isUserSignedIn = false;
         initSignInFragment(false);
-    }
-
-    public String getUserName() {
-        return userName;
-    }
-
-    public String getUserEmail() {
-        return userEmail;
-    }
-
-    public Uri getUserImage() {
-        return userImage;
     }
 }
