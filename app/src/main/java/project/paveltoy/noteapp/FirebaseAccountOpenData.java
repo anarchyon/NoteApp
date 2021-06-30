@@ -8,6 +8,7 @@ public class FirebaseAccountOpenData {
     private String displayName;
     private String email;
     private Uri imageUri;
+    private int requestCounter = 0;
 
     private FirebaseAccountOpenData(){}
 
@@ -15,6 +16,7 @@ public class FirebaseAccountOpenData {
         if (instance == null) {
             instance = new FirebaseAccountOpenData();
         }
+        instance.requestCounter++;
         return instance;
     }
 
@@ -40,5 +42,15 @@ public class FirebaseAccountOpenData {
 
     public void setImageUri(Uri imageUri) {
         this.imageUri = imageUri;
+    }
+
+    public void clearData() {
+        setDisplayName(null);
+        setEmail(null);
+        setImageUri(null);
+    }
+
+    public int getRequestCounter() {
+        return requestCounter;
     }
 }

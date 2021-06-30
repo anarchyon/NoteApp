@@ -14,11 +14,8 @@ import com.firebase.ui.auth.AuthUI;
 import com.firebase.ui.auth.FirebaseAuthUIActivityResultContract;
 import com.firebase.ui.auth.IdpResponse;
 import com.firebase.ui.auth.data.model.FirebaseAuthUIAuthenticationResult;
-import com.google.android.gms.auth.api.identity.BeginSignInRequest;
-import com.google.android.gms.auth.api.identity.SignInClient;
-import com.google.android.gms.auth.api.signin.GoogleSignIn;
-import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.button.MaterialButton;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -32,6 +29,7 @@ import java.util.Arrays;
 import java.util.List;
 
 public class SignInFragment extends Fragment {
+    public static final String TAG = "sign_in_fragment";
     private GoogleSignInClient googleSignInClient;
     private TextView textViewAccountEmail, textViewAccountName;
     private ImageView imageViewAccountImage;
@@ -47,8 +45,7 @@ public class SignInFragment extends Fragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
-        signInOk(firebaseUser);
+
     }
 
     @Nullable
@@ -58,8 +55,12 @@ public class SignInFragment extends Fragment {
             @Nullable ViewGroup container,
             @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_sign_in, container, false);
+        FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
+        setFirebaseAccountOpenData(firebaseUser);
+        checkSignDataAndStartProgram(firebaseUser);
         initView(view);
-        initUI();
+        updateUI();
+        setButtonState(firebaseUser != null);
         return view;
     }
 
@@ -73,7 +74,6 @@ public class SignInFragment extends Fragment {
         signOutButton = view.findViewById(R.id.sign_out_button);
         signOutButton.setOnClickListener(view1 -> {
             signOut();
-            getSignInController().signedOut();
         });
 
         imageViewAccountImage = view.findViewById(R.id.account_image);
@@ -102,70 +102,73 @@ public class SignInFragment extends Fragment {
         IdpResponse response = result.getIdpResponse();
         if (result.getResultCode() == Activity.RESULT_OK) {
             FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
-            signInOk(firebaseUser);
+            setFirebaseAccountOpenData(firebaseUser);
+            updateUI();
+            setButtonState(true);
+            checkSignDataAndStartProgram(firebaseUser);
         }
     }
 
     private void handleSignInResult(FirebaseUser firebaseUser) {
 //        try {
 //            GoogleSignInAccount account = firebaseUser.getResult(ApiException.class);
-            disableSign();
-            accountName = firebaseUser.getDisplayName();
-            accountEmail = firebaseUser.getEmail();
-            accountImage = firebaseUser.getPhotoUrl();
-            updateUI(accountName, accountEmail, accountImage);
+//        disableSign();
+        accountName = firebaseUser.getDisplayName();
+        accountEmail = firebaseUser.getEmail();
+        accountImage = firebaseUser.getPhotoUrl();
+//            updateUI(accountName, accountEmail, accountImage);
 //        } catch (ApiException e) {
 //
 //        }
     }
 
-    private void signInOk(FirebaseUser firebaseUser) {
+    private void checkSignDataAndStartProgram(FirebaseUser firebaseUser) {
         if (firebaseUser != null) {
-            boolean isProgramJustLaunched = false;
-            if (firebaseAccountOpenData == null) isProgramJustLaunched = true;
-            setFirebaseAccountOpenData(firebaseUser);
-            if (isProgramJustLaunched) getSignInController().signedIn();
+            if (firebaseAccountOpenData.getRequestCounter() <= 1)
+                getSignInController().signedIn();
         }
 //        Intent signInIntent = googleSignInClient.getSignInIntent();
 //        startActivityForResult(signInIntent, RC_SIGN_IN);
     }
 
-    private void setFirebaseAccountOpenData(FirebaseUser firebaseUser) {
+    private void setFirebaseAccountOpenData(@Nullable FirebaseUser firebaseUser) {
         firebaseAccountOpenData = FirebaseAccountOpenData.getInstance();
-        firebaseAccountOpenData.setDisplayName(firebaseUser.getDisplayName());
-        firebaseAccountOpenData.setEmail(firebaseUser.getEmail());
-        firebaseAccountOpenData.setImageUri(firebaseUser.getPhotoUrl());
+        if (firebaseUser == null) {
+            firebaseAccountOpenData.clearData();
+        } else {
+            firebaseAccountOpenData.setDisplayName(firebaseUser.getDisplayName());
+            firebaseAccountOpenData.setEmail(firebaseUser.getEmail());
+            firebaseAccountOpenData.setImageUri(firebaseUser.getPhotoUrl());
+        }
     }
 
-    private void initUI() {
-        textViewAccountName.setText(accountName);
-        textViewAccountEmail.setText(accountEmail);
-        imageViewAccountImage.setImageURI(accountImage);
-
+    private void updateUI() {
+        textViewAccountName.setText(firebaseAccountOpenData.getDisplayName());
+        textViewAccountEmail.setText(firebaseAccountOpenData.getEmail());
+        imageViewAccountImage.setImageURI(firebaseAccountOpenData.getImageUri());
     }
 
-    private void updateUI(String accountName, String accountEmail, Uri accountImage) {
-        textViewAccountName.setText(accountName);
-        textViewAccountEmail.setText(accountEmail);
-        imageViewAccountImage.setImageURI(accountImage);
+    private void setButtonState(boolean isUserSignedIn) {
+        signInButton.setEnabled(!isUserSignedIn);
+        buttonContinue.setVisibility(isUserSignedIn ? View.VISIBLE : View.INVISIBLE);
+        signOutButton.setEnabled(isUserSignedIn);
     }
-    private void enableSign() {
-        signInButton.setEnabled(true);
-        buttonContinue.setEnabled(false);
-        signOutButton.setEnabled(false);
-    }
-    private void disableSign() {
-        signInButton.setEnabled(false);
-        buttonContinue.setEnabled(true);
-        signOutButton.setEnabled(true);
-    }
+
+//    private void enableSign() {
+//        signInButton.setEnabled(true);
+//        buttonContinue.setEnabled(false);
+//        signOutButton.setEnabled(false);
+//    }
+//    private void disableSign() {
+//        signInButton.setEnabled(false);
+//        buttonContinue.setEnabled(true);
+//        signOutButton.setEnabled(true);
+//    }
+
     interface SignInController {
-
-
         void signedIn();
 
         void signedOut();
-
     }
 
     private SignInController getSignInController() {
@@ -173,24 +176,26 @@ public class SignInFragment extends Fragment {
     }
 
     private void signOut() {
-        googleSignInClient
-                .signOut()
-                .addOnCompleteListener(task -> {
-                    enableSign();
-                    updateUI("", "", null);
+        AuthUI.getInstance()
+                .signOut(requireActivity())
+                .addOnSuccessListener(unused -> {
+                    setButtonState(false);
+                    setFirebaseAccountOpenData(null);
+                    updateUI();
+                    getSignInController().signedOut();
                 });
     }
 
-    @Override
-    public void onStart() {
-        super.onStart();
-        GoogleSignInAccount account = GoogleSignIn.getLastSignedInAccount(requireContext());
-        if (account != null) {
-            disableSign();
-            accountName = account.getDisplayName();
-            accountEmail = account.getEmail();
-            accountImage = account.getPhotoUrl();
-            updateUI(accountName, accountEmail, accountImage);
-        }
-    }
+//    @Override
+//    public void onStart() {
+//        super.onStart();
+//        GoogleSignInAccount account = GoogleSignIn.getLastSignedInAccount(requireContext());
+//        if (account != null) {
+//            disableSign();
+//            accountName = account.getDisplayName();
+//            accountEmail = account.getEmail();
+//            accountImage = account.getPhotoUrl();
+//            updateUI(accountName, accountEmail, accountImage);
+//        }
+//    }
 }

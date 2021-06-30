@@ -15,14 +15,16 @@ import java.util.List;
 import java.util.Map;
 
 public class FirebaseNoteService implements NoteService {
-    public static final String NOTES_COLLECTION = "notes";
+//    public static final String NOTES_COLLECTION = "notes";
 
     private final FirebaseFirestore firestore = FirebaseFirestore.getInstance();
-    private final CollectionReference collectionReference = firestore.collection(NOTES_COLLECTION);
+    private CollectionReference collectionReference;
     private List<Note> notes = new ArrayList<>();
 
     @Override
     public NoteService init(NoteSourceCallback noteSourceCallback) {
+        FirebaseAccountOpenData accountOpenData = FirebaseAccountOpenData.getInstance();
+        collectionReference = firestore.collection(accountOpenData.getEmail());
         collectionReference
                 .orderBy(NoteMapping.Fields.CREATION_DATE, Query.Direction.DESCENDING)
                 .get()
