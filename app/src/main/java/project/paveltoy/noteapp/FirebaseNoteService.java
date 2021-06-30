@@ -1,5 +1,10 @@
 package project.paveltoy.noteapp;
 
+import android.content.Intent;
+
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.appcompat.app.AppCompatActivity;
+
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
@@ -12,10 +17,9 @@ import java.util.Map;
 public class FirebaseNoteService implements NoteService {
     public static final String NOTES_COLLECTION = "notes";
 
-    private FirebaseFirestore firestore = FirebaseFirestore.getInstance();
-    private CollectionReference collectionReference = firestore.collection(NOTES_COLLECTION);
+    private final FirebaseFirestore firestore = FirebaseFirestore.getInstance();
+    private final CollectionReference collectionReference = firestore.collection(NOTES_COLLECTION);
     private List<Note> notes = new ArrayList<>();
-
 
     @Override
     public NoteService init(NoteSourceCallback noteSourceCallback) {
