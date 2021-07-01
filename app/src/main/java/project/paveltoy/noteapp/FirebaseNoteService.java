@@ -1,51 +1,59 @@
 package project.paveltoy.noteapp;
 
-import android.content.Intent;
-
-import androidx.activity.result.ActivityResultLauncher;
-import androidx.appcompat.app.AppCompatActivity;
-
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreSettings;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
 public class FirebaseNoteService implements NoteService {
-//    public static final String NOTES_COLLECTION = "notes";
-
-    private final FirebaseFirestore firestore = FirebaseFirestore.getInstance();
+    private final FirebaseFirestore db;
     private CollectionReference collectionReference;
-    private List<Note> notes = new ArrayList<>();
+    private List<Note> notes;
+
+    public FirebaseNoteService() {
+        db = FirebaseFirestore.getInstance();
+        notes = new ArrayList<>();
+
+        FirebaseFirestoreSettings settings = new FirebaseFirestoreSettings.Builder()
+                .setPersistenceEnabled(true).build();
+        db.setFirestoreSettings(settings);
+    }
 
     @Override
     public NoteService init(NoteSourceCallback noteSourceCallback) {
         FirebaseAccountOpenData accountOpenData = FirebaseAccountOpenData.getInstance();
-        collectionReference = firestore.collection(accountOpenData.getEmail());
+        collectionReference = db.collection(accountOpenData.getEmail());
         collectionReference
                 .orderBy(NoteMapping.Fields.CREATION_DATE, Query.Direction.DESCENDING)
                 .get()
                 .addOnCompleteListener(task -> {
-                    if (task.isSuccessful()) {
-                        notes = new ArrayList<>();
-                        for (QueryDocumentSnapshot documentSnapshot : task.getResult()) {
-                            Map<String, Object> document = documentSnapshot.getData();
-                            String id = documentSnapshot.getId();
-                            Note note = NoteMapping.parseFirestoreDocumentToNote(id, document);
-                            notes.add(note);
-                        }
+                    if (task.isSuccessful() && task.getResult() != null) {
+                        loadNotes(task.getResult());
                         noteSourceCallback.initialized(this);
-                    } else {
-
                     }
-                })
-                .addOnFailureListener(e -> {
-
                 });
+        collectionReference.addSnapshotListener((value, error) -> {
+            if (value != null) {
+                loadNotes(value);
+            }
+        });
         return this;
+    }
+
+    private void loadNotes(QuerySnapshot documentSnapshots) {
+        notes = new ArrayList<>();
+        for (QueryDocumentSnapshot documentSnapshot : documentSnapshots) {
+            Map<String, Object> document = documentSnapshot.getData();
+            String id = documentSnapshot.getId();
+            Note note = NoteMapping.parseFirestoreDocumentToNote(id, document);
+            notes.add(note);
+        }
     }
 
     @Override
