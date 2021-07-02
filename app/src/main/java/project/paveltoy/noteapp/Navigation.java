@@ -39,4 +39,8 @@ public class Navigation {
     public List<Fragment> getFragments() {
         return fragmentManager.getFragments();
     }
+
+    public Fragment getFragmentByContainerId(int fragmentContainerId) {
+        return fragmentManager.findFragmentById(fragmentContainerId);
+    }
 }

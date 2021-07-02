@@ -3,10 +3,8 @@ package project.paveltoy.noteapp;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.Locale;
 import java.util.Objects;
 import java.util.UUID;
 
@@ -15,7 +13,7 @@ public class Note implements Parcelable {
     public static final int NOTE_NOT_IMPORTANT = 0;
 
     private String id;
-    private String name;
+    private String subject;
     private String text;
     private Date creationDate;
     private int isImportant;
@@ -27,16 +25,16 @@ public class Note implements Parcelable {
         return UUID.randomUUID().toString();
     }
 
-    public Note(String id, String name, String text, Date creationDate, int isImportant) {
+    public Note(String id, String subject, String text, Date creationDate, int isImportant) {
         this.id = id;
-        this.name = name;
+        this.subject = subject;
         this.text = text;
         this.creationDate = creationDate;
         this.isImportant = isImportant;
     }
 
     protected Note(Parcel in) {
-        name = in.readString();
+        subject = in.readString();
         text = in.readString();
         creationDate = new Date(in.readLong());
         id = in.readString();
@@ -55,8 +53,8 @@ public class Note implements Parcelable {
         }
     };
 
-    public String getName() {
-        return name;
+    public String getSubject() {
+        return subject;
     }
 
     public String getText() {
@@ -83,8 +81,8 @@ public class Note implements Parcelable {
         this.creationDate = creationDate;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setSubject(String subject) {
+        this.subject = subject;
     }
 
     public void setText(String text) {
@@ -98,7 +96,7 @@ public class Note implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel parcel, int i) {
-        parcel.writeString(getName());
+        parcel.writeString(getSubject());
         parcel.writeString(getText());
         parcel.writeLong(getCreationDate().getTime());
         parcel.writeString(getId());

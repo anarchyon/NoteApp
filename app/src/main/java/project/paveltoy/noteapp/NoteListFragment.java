@@ -147,6 +147,7 @@ public class NoteListFragment extends Fragment implements CallbackContract {
                 .setAnchorView(R.id.fab)
                 .setAction(R.string.snackbar_action_undo, view -> {
                     notes.insertNote(itemPosition, note);
+                    adapter.notifyItemInserted(itemPosition);
                 })
                 .show();
     }
