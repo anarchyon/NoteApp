@@ -7,7 +7,6 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.widget.AppCompatEditText;
 import androidx.appcompat.widget.AppCompatTextView;
 import androidx.appcompat.widget.AppCompatToggleButton;
-import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
 
 import android.text.Editable;
@@ -17,12 +16,12 @@ import android.view.ViewGroup;
 import android.widget.Toast;
 
 import com.google.android.material.bottomappbar.BottomAppBar;
-import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
 import java.text.SimpleDateFormat;
 import java.util.Locale;
 
-public class NoteFragment extends Fragment implements OnBackPressedListener {
+public class NoteFragment extends Fragment
+        implements OnBackPressedListener, CloseNoteWithoutSavingDialog.CloseDialogResultListener {
     public static final String TAG = "note_fragment";
     private static final String ARG_NOTE = "note";
     private Note note;
@@ -78,15 +77,23 @@ public class NoteFragment extends Fragment implements OnBackPressedListener {
             bottomAppBar.setOnMenuItemClickListener(item -> {
                 int itemId = item.getItemId();
                 if (itemId == R.id.menu_bottom_save_note) {
-                    getContract().saveNote(gatherNote());
+                    saveNote();
                     return true;
                 } else if (itemId == R.id.menu_bottom_delete_note) {
-                    getContract().deleteNote(note);
+                    deleteNote();
                     return true;
                 }
                 return false;
             });
         }
+    }
+
+    private void saveNote() {
+        getContract().saveNote(gatherNote());
+    }
+
+    private void deleteNote() {
+        getContract().deleteNote(note);
     }
 
     private Note gatherNote() {
@@ -110,7 +117,7 @@ public class NoteFragment extends Fragment implements OnBackPressedListener {
 
     private void fillNoteFields() {
         if (note == null) return;
-        subjectNote.setText(note.getName());
+        subjectNote.setText(note.getSubject());
         textNote.setText(note.getText());
         String dateString = new SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.getDefault())
                 .format(note.getCreationDate());
@@ -130,6 +137,7 @@ public class NoteFragment extends Fragment implements OnBackPressedListener {
 
         void deleteNote(Note note);
 
+        void launchSuperBackPressed();
     }
 
     @Override
@@ -143,17 +151,35 @@ public class NoteFragment extends Fragment implements OnBackPressedListener {
     }
 
     @Override
-    public void onStop() {
-        super.onStop();
+    public void closeNoteAndDoSave(boolean isNeedToSave) {
+        if (isNeedToSave) saveNote();
+        else {
+//            deleteNote();
+            getContract().launchSuperBackPressed();
+        }
     }
 
     @Override
     public void onBackPressed() {
-        Toast.makeText(getContext(), "Test onBackPressed from Fragment", Toast.LENGTH_LONG).show();
-        CloseNoteWithoutSavingDialog dialog = new CloseNoteWithoutSavingDialog();
-        getChildFragmentManager()
-                .beginTransaction()
-                .add(dialog, null)
-                .commit();
+        if (note.getId() == null || isNoteChanged()) {
+            Toast.makeText(getContext(), "Test onBackPressed from Fragment", Toast.LENGTH_LONG).show();
+            CloseNoteWithoutSavingDialog dialog = new CloseNoteWithoutSavingDialog();
+            dialog.setCloseDialogResultListener(this);
+            getChildFragmentManager()
+                    .beginTransaction()
+                    .add(dialog, null)
+                    .commit();
+        } else {
+            getContract().launchSuperBackPressed();
+        }
+    }
+
+    private boolean isNoteChanged() {
+        if (subjectNote.getText() != null && textNote.getText() != null) {
+            String newSubject = subjectNote.getText().toString();
+            String newText = textNote.getText().toString();
+            return !note.getSubject().equals(newSubject) || !note.getText().equals(newText);
+        }
+        return false;
     }
 }

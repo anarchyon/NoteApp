@@ -1,18 +1,20 @@
 package project.paveltoy.noteapp;
 
 import android.content.res.Configuration;
-import android.net.Uri;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.Toast;
 
 import com.google.android.material.bottomappbar.BottomAppBar;
-import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.android.material.snackbar.BaseTransientBottomBar;
+import com.google.android.material.snackbar.Snackbar;
+
+import java.util.List;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.LifecycleObserver;
 
 public class MainActivity
@@ -49,10 +51,23 @@ public class MainActivity
         initFragmentContainer();
         initBottomAppBar();
         loadStates(savedInstanceState);
-        if (isUserSignedIn) {
-            initListFragment();
+        if (navigation.getFragments().size() == 0) {
+            if (isUserSignedIn) {
+                initListFragment();
+            } else {
+                initSignInFragment(false);
+            }
         } else {
-            initSignInFragment(false);
+            restoreFragmentFromFragmentManager();
+        }
+    }
+
+    private void restoreFragmentFromFragmentManager() {
+        View view = findViewById(R.id.coord_view);
+        for (Fragment fragment : navigation.getFragments()) {
+            Snackbar.make(view, fragment.toString(), BaseTransientBottomBar.LENGTH_INDEFINITE)
+                    .setAnchorView(fab)
+                    .show();
         }
     }
 
@@ -193,22 +208,25 @@ public class MainActivity
 
     @Override
     public void onBackPressed() {
+        OnBackPressedListener onBackPressedListener = null;
+        List<Fragment> fragments = navigation.getFragments();
+        for (Fragment fragment : fragments) {
+            if (fragment instanceof OnBackPressedListener) {
+                onBackPressedListener = (OnBackPressedListener) fragment;
+                break;
+            }
+        }
+        if (onBackPressedListener != null) {
+            onBackPressedListener.onBackPressed();
+        } else {
+            launchSuperBackPressed();
+        }
+    }
+
+    public void launchSuperBackPressed() {
         NoteFragment noteFragment = (NoteFragment) getFragmentByTag(NoteFragment.TAG);
         if (noteFragment != null && noteFragment.isVisible()) {
             note = null;
-        }
-
-        OnBackPressedListener onBackPressedListener = null;
-        for (Fragment fragment : navigation.getFragments()) {
-            if (fragment instanceof OnBackPressedListener) {
-                onBackPressedListener = (OnBackPressedListener) fragment;
-            }
-
-            if (onBackPressedListener != null) {
-                onBackPressedListener.onBackPressed();
-            } else {
-                super.onBackPressed();
-            }
         }
 
         if (isLandscape) {
@@ -217,6 +235,7 @@ public class MainActivity
                 initListFragment();
             }
         }
+        super.onBackPressed();
     }
 
     @Override

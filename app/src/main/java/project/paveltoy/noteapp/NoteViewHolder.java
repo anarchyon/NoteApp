@@ -44,7 +44,7 @@ public class NoteViewHolder extends RecyclerView.ViewHolder {
 
     public void bind(Note note) {
         this.note = note;
-        header.setText(note.getName());
+        header.setText(note.getSubject());
         String dateString = new SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.getDefault())
                 .format(note.getCreationDate());
         date.setText(dateString);

@@ -110,6 +110,6 @@ public class FirebaseNoteRepository implements NoteRepository {
     @Override
     public void insertNote(int position, Note note) {
         collectionReference.add(NoteMapping.exportNoteToFirestoreDocument(note));
-        notes.set(position, note);
+        notes.add(position, note);
     }
 }

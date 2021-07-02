@@ -2,9 +2,7 @@ package project.paveltoy.noteapp;
 
 import com.google.firebase.Timestamp;
 
-import java.text.SimpleDateFormat;
 import java.util.HashMap;
-import java.util.Locale;
 import java.util.Map;
 
 public class NoteMapping {
@@ -24,7 +22,7 @@ public class NoteMapping {
     public static Map<String, Object> exportNoteToFirestoreDocument(Note note) {
         Map<String, Object> document = new HashMap<>();
         document.put(Fields.CREATION_DATE, note.getCreationDate());
-        document.put(Fields.SUBJECT, note.getName());
+        document.put(Fields.SUBJECT, note.getSubject());
         document.put(Fields.TEXT, note.getText());
         boolean isImportant = note.getIsImportant() != 0;
         document.put(Fields.IMPORTANT, isImportant);
