@@ -2,7 +2,6 @@ package project.paveltoy.noteapp;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -14,8 +13,6 @@ import com.firebase.ui.auth.AuthUI;
 import com.firebase.ui.auth.FirebaseAuthUIActivityResultContract;
 import com.firebase.ui.auth.IdpResponse;
 import com.firebase.ui.auth.data.model.FirebaseAuthUIAuthenticationResult;
-import com.google.android.gms.auth.api.signin.GoogleSignInClient;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.button.MaterialButton;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -30,13 +27,11 @@ import java.util.List;
 
 public class SignInFragment extends Fragment {
     public static final String TAG = "sign_in_fragment";
-    private GoogleSignInClient googleSignInClient;
     private TextView textViewAccountEmail, textViewAccountName;
     private ImageView imageViewAccountImage;
     private MaterialButton buttonContinue, signInButton, signOutButton;
-    private String accountName, accountEmail;
-    private Uri accountImage;
     private FirebaseAccountOpenData firebaseAccountOpenData;
+    private boolean isUserLoggedIn;
 
     private final ActivityResultLauncher<Intent> signInLauncher = registerForActivityResult(
             new FirebaseAuthUIActivityResultContract(),
@@ -45,7 +40,14 @@ public class SignInFragment extends Fragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        if (user != null) {
+            isUserLoggedIn = true;
+            setFirebaseAccountOpenData(user);
+            if (firebaseAccountOpenData.isFirstRequest()) getSignInController().signedIn();
+        } else {
+            isUserLoggedIn = false;
+        }
     }
 
     @Nullable
@@ -55,12 +57,12 @@ public class SignInFragment extends Fragment {
             @Nullable ViewGroup container,
             @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_sign_in, container, false);
-        FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
-        setFirebaseAccountOpenData(firebaseUser);
-        checkSignDataAndStartProgram(firebaseUser);
+//        FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
+//        setFirebaseAccountOpenData(firebaseUser);
+//        checkSignDataAndStartProgram(firebaseUser);
         initView(view);
         updateUI();
-        setButtonState(firebaseUser != null);
+//        setButtonState(firebaseUser != null);
         return view;
     }
 
@@ -103,9 +105,14 @@ public class SignInFragment extends Fragment {
         if (result.getResultCode() == Activity.RESULT_OK) {
             FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
             setFirebaseAccountOpenData(firebaseUser);
-            updateUI();
-            setButtonState(true);
-            checkSignDataAndStartProgram(firebaseUser);
+            getSignInController().signedIn();
+//            updateUI();
+//            setButtonState(true);
+//            checkSignDataAndStartProgram(firebaseUser);
+        } else {
+            if (response != null) {
+                response.getError().getMessage();
+            }
         }
     }
 
@@ -113,23 +120,23 @@ public class SignInFragment extends Fragment {
 //        try {
 //            GoogleSignInAccount account = firebaseUser.getResult(ApiException.class);
 //        disableSign();
-        accountName = firebaseUser.getDisplayName();
-        accountEmail = firebaseUser.getEmail();
-        accountImage = firebaseUser.getPhotoUrl();
+//        accountName = firebaseUser.getDisplayName();
+//        accountEmail = firebaseUser.getEmail();
+//        accountImage = firebaseUser.getPhotoUrl();
 //            updateUI(accountName, accountEmail, accountImage);
 //        } catch (ApiException e) {
 //
 //        }
     }
 
-    private void checkSignDataAndStartProgram(FirebaseUser firebaseUser) {
-        if (firebaseUser != null) {
-            if (firebaseAccountOpenData.getRequestCounter() <= 1)
-                getSignInController().signedIn();
-        }
-//        Intent signInIntent = googleSignInClient.getSignInIntent();
-//        startActivityForResult(signInIntent, RC_SIGN_IN);
-    }
+//    private void checkSignDataAndStartProgram(FirebaseUser firebaseUser) {
+//        if (firebaseUser != null) {
+//            if (firebaseAccountOpenData.getRequestCounter() <= 1)
+//                getSignInController().signedIn();
+//        }
+////        Intent signInIntent = googleSignInClient.getSignInIntent();
+////        startActivityForResult(signInIntent, RC_SIGN_IN);
+//    }
 
     private void setFirebaseAccountOpenData(@Nullable FirebaseUser firebaseUser) {
         firebaseAccountOpenData = FirebaseAccountOpenData.getInstance();
@@ -143,9 +150,14 @@ public class SignInFragment extends Fragment {
     }
 
     private void updateUI() {
-        textViewAccountName.setText(firebaseAccountOpenData.getDisplayName());
-        textViewAccountEmail.setText(firebaseAccountOpenData.getEmail());
-        imageViewAccountImage.setImageURI(firebaseAccountOpenData.getImageUri());
+        if (isUserLoggedIn) {
+            textViewAccountName.setText(firebaseAccountOpenData.getDisplayName());
+            textViewAccountEmail.setText(firebaseAccountOpenData.getEmail());
+            imageViewAccountImage.setImageURI(firebaseAccountOpenData.getImageUri());
+        }
+        signInButton.setEnabled(!isUserLoggedIn);
+        signOutButton.setEnabled(isUserLoggedIn);
+        buttonContinue.setEnabled(isUserLoggedIn);
     }
 
     private void setButtonState(boolean isUserSignedIn) {
@@ -179,7 +191,7 @@ public class SignInFragment extends Fragment {
         AuthUI.getInstance()
                 .signOut(requireActivity())
                 .addOnSuccessListener(unused -> {
-                    setButtonState(false);
+                    isUserLoggedIn = false;
                     setFirebaseAccountOpenData(null);
                     updateUI();
                     getSignInController().signedOut();

@@ -8,15 +8,14 @@ public class FirebaseAccountOpenData {
     private String displayName;
     private String email;
     private Uri imageUri;
-    private int requestCounter = 0;
+    private boolean isFirstRequest = true;
 
     private FirebaseAccountOpenData(){}
 
     public static FirebaseAccountOpenData getInstance() {
         if (instance == null) {
             instance = new FirebaseAccountOpenData();
-        }
-        instance.requestCounter++;
+        } else instance.isFirstRequest = false;
         return instance;
     }
 
@@ -50,7 +49,7 @@ public class FirebaseAccountOpenData {
         setImageUri(null);
     }
 
-    public int getRequestCounter() {
-        return requestCounter;
+    public boolean isFirstRequest() {
+        return isFirstRequest;
     }
 }

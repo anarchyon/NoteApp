@@ -1,7 +1,7 @@
 package project.paveltoy.noteapp;
 
-public interface NoteService {
-    NoteService init(NoteSourceCallback noteSourceCallback);
+public interface NoteRepository {
+    NoteRepository init(NoteSourceCallback noteSourceCallback);
 
     void deleteNote(int position);
 
@@ -18,4 +18,6 @@ public interface NoteService {
     int size();
 
     int getPosition(Note note);
+
+    void insertNote(int position, Note note);
 }

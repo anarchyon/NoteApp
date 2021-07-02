@@ -7,6 +7,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.widget.AppCompatEditText;
 import androidx.appcompat.widget.AppCompatTextView;
 import androidx.appcompat.widget.AppCompatToggleButton;
+import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
 
 import android.text.Editable;
@@ -16,11 +17,12 @@ import android.view.ViewGroup;
 import android.widget.Toast;
 
 import com.google.android.material.bottomappbar.BottomAppBar;
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
 import java.text.SimpleDateFormat;
 import java.util.Locale;
 
-public class NoteFragment extends Fragment {
+public class NoteFragment extends Fragment implements OnBackPressedListener {
     public static final String TAG = "note_fragment";
     private static final String ARG_NOTE = "note";
     private Note note;
@@ -123,9 +125,11 @@ public class NoteFragment extends Fragment {
     }
 
     public interface Contract {
+
         void saveNote(Note note);
 
         void deleteNote(Note note);
+
     }
 
     @Override
@@ -141,5 +145,15 @@ public class NoteFragment extends Fragment {
     @Override
     public void onStop() {
         super.onStop();
+    }
+
+    @Override
+    public void onBackPressed() {
+        Toast.makeText(getContext(), "Test onBackPressed from Fragment", Toast.LENGTH_LONG).show();
+        CloseNoteWithoutSavingDialog dialog = new CloseNoteWithoutSavingDialog();
+        getChildFragmentManager()
+                .beginTransaction()
+                .add(dialog, null)
+                .commit();
     }
 }
