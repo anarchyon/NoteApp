@@ -6,15 +6,12 @@ import android.view.ViewGroup;
 import android.widget.Filter;
 import android.widget.Filterable;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.RecyclerView;
 
 public class NoteAdapter extends RecyclerView.Adapter<NoteViewHolder> implements Filterable {
-    private NoteService data;
+    private NoteRepository data;
     private Note note;
     private OnItemClickListener onItemClickListener;
     private final Fragment fragment;
@@ -24,7 +21,7 @@ public class NoteAdapter extends RecyclerView.Adapter<NoteViewHolder> implements
         this.fragment = fragment;
     }
 
-    public void setData(NoteService data) {
+    public void setData(NoteRepository data) {
         this.data = data;
     }
 

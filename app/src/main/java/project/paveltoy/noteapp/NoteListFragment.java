@@ -26,7 +26,7 @@ import com.google.android.material.snackbar.Snackbar;
 public class NoteListFragment extends Fragment implements CallbackContract {
     private static final String ARG_NOTES = "notes";
     public static final String TAG = "list_fragment";
-    private NoteService notes;
+    private NoteRepository notes;
     private RecyclerView recyclerView;
     private NoteAdapter adapter;
     View parentView;
@@ -56,7 +56,7 @@ public class NoteListFragment extends Fragment implements CallbackContract {
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.setAdapter(adapter);
         super.onViewCreated(view, savedInstanceState);
-        notes = new FirebaseNoteService().init(notes -> adapter.notifyDataSetChanged());
+        notes = new FirebaseNoteRepository().init(notes -> adapter.notifyDataSetChanged());
         renderList();
     }
 
@@ -140,12 +140,13 @@ public class NoteListFragment extends Fragment implements CallbackContract {
     }
 
     private void deleteNote(int itemPosition) {
+        Note note = notes.getNote(itemPosition);
         notes.deleteNote(itemPosition);
         adapter.notifyItemRemoved(itemPosition);
         Snackbar.make(parentView, R.string.snackbar_delete_note, BaseTransientBottomBar.LENGTH_LONG)
                 .setAnchorView(R.id.fab)
                 .setAction(R.string.snackbar_action_undo, view -> {
-                    // TODO: 28.06.2021
+                    notes.insertNote(itemPosition, note);
                 })
                 .show();
     }

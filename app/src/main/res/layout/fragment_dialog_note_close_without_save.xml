@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:padding="@dimen/secondary_margin_and_padding">
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/dialog_close_title"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toTopOf="@+id/dialog_close_text"
+            android:text="@string/dialog_close_title_contains"
+            app:layout_constraintVertical_chainStyle="packed"/>
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/dialog_close_text"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/dialog_close_title"
+            app:layout_constraintBottom_toTopOf="@+id/dialog_close_button_cancel"
+            android:text="@string/dialog_close_text_contains"/>
+
+        <com.google.android.material.button.MaterialButton
+            android:paddingTop="@dimen/secondary_margin_and_padding"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            style="@style/Widget.MaterialComponents.Button.TextButton.Dialog"
+            android:id="@+id/dialog_close_button_cancel"
+            android:text="@string/button_cancel_text"
+            app:layout_constraintTop_toBottomOf="@+id/dialog_close_text"
+            app:layout_constraintBottom_toBottomOf="@+id/dialog_close_button_close_without_save"
+            app:layout_constraintEnd_toEndOf="parent"/>
+
+        <com.google.android.material.button.MaterialButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/dialog_close_button_close_without_save"
+            style="@style/Widget.MaterialComponents.Button.TextButton.Dialog"
+            android:text="@string/dialog_close_button_close_without_save_text"
+            app:layout_constraintTop_toBottomOf="@+id/dialog_close_button_cancel"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintBottom_toTopOf="@+id/dialog_close_button_save_and_close"/>
+
+        <com.google.android.material.button.MaterialButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/dialog_close_button_save_and_close"
+            android:text="@string/dialog_close_button_save_and_close"
+            style="@style/Widget.MaterialComponents.Button.TextButton.Dialog"
+            app:layout_constraintTop_toBottomOf="@+id/dialog_close_button_close_without_save"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"/>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</FrameLayout>

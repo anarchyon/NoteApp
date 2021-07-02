@@ -12,6 +12,7 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.LifecycleObserver;
 
 public class MainActivity
@@ -147,7 +148,6 @@ public class MainActivity
         super.onSaveInstanceState(outState);
         outState.putParcelable(KEY_NOTE, note);
         outState.putBoolean(KEY_USER_SIGN_STATUS, isUserSignedIn);
-
     }
 
     @Override
@@ -195,19 +195,22 @@ public class MainActivity
     public void onBackPressed() {
         NoteFragment noteFragment = (NoteFragment) getFragmentByTag(NoteFragment.TAG);
         if (noteFragment != null && noteFragment.isVisible()) {
-            new MaterialAlertDialogBuilder(this)
-                    .setMessage(R.string.alert_dialog_not_saved_note)
-                    .setNegativeButton(R.string.alert_dialog_close_with_save, (dialogInterface, i) -> {
-
-                    })
-                    .setPositiveButton(R.string.alert_dialog_close_not_save, ((dialogInterface, i) -> {
-
-                    }))
-                    .setCancelable(false)
-                    .show();
             note = null;
         }
-        super.onBackPressed();
+
+        OnBackPressedListener onBackPressedListener = null;
+        for (Fragment fragment : navigation.getFragments()) {
+            if (fragment instanceof OnBackPressedListener) {
+                onBackPressedListener = (OnBackPressedListener) fragment;
+            }
+
+            if (onBackPressedListener != null) {
+                onBackPressedListener.onBackPressed();
+            } else {
+                super.onBackPressed();
+            }
+        }
+
         if (isLandscape) {
             int backStackEntryCount = getSupportFragmentManager().getBackStackEntryCount();
             if (backStackEntryCount == 0 || (noteFragment != null && backStackEntryCount == 1)) {

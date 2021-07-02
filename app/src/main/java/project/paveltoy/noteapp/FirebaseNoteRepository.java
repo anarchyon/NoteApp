@@ -11,12 +11,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-public class FirebaseNoteService implements NoteService {
+public class FirebaseNoteRepository implements NoteRepository {
     private final FirebaseFirestore db;
     private CollectionReference collectionReference;
     private List<Note> notes;
 
-    public FirebaseNoteService() {
+    public FirebaseNoteRepository() {
         db = FirebaseFirestore.getInstance();
         notes = new ArrayList<>();
 
@@ -26,7 +26,7 @@ public class FirebaseNoteService implements NoteService {
     }
 
     @Override
-    public NoteService init(NoteSourceCallback noteSourceCallback) {
+    public NoteRepository init(NoteSourceCallback noteSourceCallback) {
         FirebaseAccountOpenData accountOpenData = FirebaseAccountOpenData.getInstance();
         collectionReference = db.collection(accountOpenData.getEmail());
         collectionReference
@@ -37,6 +37,9 @@ public class FirebaseNoteService implements NoteService {
                         loadNotes(task.getResult());
                         noteSourceCallback.initialized(this);
                     }
+                })
+                .addOnFailureListener(e -> {
+
                 });
         collectionReference.addSnapshotListener((value, error) -> {
             if (value != null) {
@@ -102,5 +105,11 @@ public class FirebaseNoteService implements NoteService {
     @Override
     public int getPosition(Note note) {
         return notes.indexOf(note);
+    }
+
+    @Override
+    public void insertNote(int position, Note note) {
+        collectionReference.add(NoteMapping.exportNoteToFirestoreDocument(note));
+        notes.set(position, note);
     }
 }

@@ -4,6 +4,8 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
+import java.util.List;
+
 public class Navigation {
     private static final String BACK_STACK_NAME = "back_stack";
     private final FragmentManager fragmentManager;
@@ -32,5 +34,9 @@ public class Navigation {
                 .beginTransaction()
                 .setPrimaryNavigationFragment(fragment)
                 .commit();
+    }
+
+    public List<Fragment> getFragments() {
+        return fragmentManager.getFragments();
     }
 }
