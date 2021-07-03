@@ -23,6 +23,13 @@ public class Navigation {
         fragmentTransaction.commit();
     }
 
+    public void moveFragmentToAnotherContainer(int idContainer, Fragment fragment, String tag, boolean useBackStack) {
+        fragmentManager.beginTransaction()
+                .remove(fragment)
+                .runOnCommit(() -> addFragment(idContainer, fragment, tag, useBackStack))
+                .commit();
+    }
+
     public void clearBackStack() {
         if (fragmentManager.getBackStackEntryCount() >= 0) {
             fragmentManager.popBackStack(BACK_STACK_NAME, FragmentManager.POP_BACK_STACK_INCLUSIVE);
