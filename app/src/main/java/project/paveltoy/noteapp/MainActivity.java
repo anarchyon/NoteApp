@@ -2,13 +2,10 @@ package project.paveltoy.noteapp;
 
 import android.content.res.Configuration;
 import android.os.Bundle;
-import android.view.View;
 import android.widget.Toast;
 
 import com.google.android.material.bottomappbar.BottomAppBar;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.google.android.material.snackbar.BaseTransientBottomBar;
-import com.google.android.material.snackbar.Snackbar;
 
 import java.util.List;
 
@@ -16,6 +13,17 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.LifecycleObserver;
+import project.paveltoy.noteapp.Data.Note;
+import project.paveltoy.noteapp.UI.AboutFragment;
+import project.paveltoy.noteapp.UI.BottomNavigationDrawer;
+import project.paveltoy.noteapp.UI.CallbackContract;
+import project.paveltoy.noteapp.UI.FragmentObserver;
+import project.paveltoy.noteapp.UI.NoteFragment;
+import project.paveltoy.noteapp.UI.NoteListFragment;
+import project.paveltoy.noteapp.UI.OnBackPressedListener;
+import project.paveltoy.noteapp.UI.RootLandFragment;
+import project.paveltoy.noteapp.UI.SettingsFragment;
+import project.paveltoy.noteapp.UI.SignInFragment;
 
 public class MainActivity
         extends AppCompatActivity
@@ -41,6 +49,8 @@ public class MainActivity
     private final LifecycleObserver signInFragmentObserver =
             new FragmentObserver(this::initBottomAppBarBySignInFragment);
 
+    private Fragment lastFragment;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,26 +61,30 @@ public class MainActivity
         initFragmentContainer();
         initBottomAppBar();
         loadStates(savedInstanceState);
-        if (navigation.getFragments().size() == 0) {
+//        if (checkLastFragment()) {
+//            initLastFragment();
+//        } else {
             if (isUserSignedIn) {
                 initListFragment();
             } else {
                 initSignInFragment(false);
             }
-        } else {
-            restoreFragmentFromFragmentManager();
-        }
+//        }
     }
-
-    private void restoreFragmentFromFragmentManager() {
-        View view = findViewById(R.id.coord_view);
-        for (Fragment fragment : navigation.getFragments()) {
-            Snackbar.make(view, fragment.toString(), BaseTransientBottomBar.LENGTH_INDEFINITE)
-                    .setAnchorView(fab)
-                    .show();
-        }
-    }
-
+//
+//    private boolean checkLastFragment() {
+//        List<Fragment> fragments = navigation.getFragments();
+//        int bs = getSupportFragmentManager().getBackStackEntryCount();
+//        if (fragments.size() > 0) {
+//            Fragment fragment = fragments.get(fragments.size() - 1);
+//            if (!(fragment instanceof NoteFragment) && !(fragment instanceof NoteListFragment)) {
+//                lastFragment = fragment;
+//                return true;
+//            }
+//        }
+//        return false;
+//    }
+//
     private void initFragmentContainer() {
         isLandscape = getResources().getConfiguration().orientation
                 == Configuration.ORIENTATION_LANDSCAPE;
@@ -141,6 +155,16 @@ public class MainActivity
         if (note != null) showNote(note);
     }
 
+//    private void initLastFragment() {
+//        navigation.clearBackStack();
+//        if (lastFragment != null) {
+//            navigation.moveFragmentToAnotherContainer(
+//                    isLandscape ? R.id.fragment_root_container : R.id.fragment_main_container,
+//                    lastFragment, SignInFragment.TAG, true
+//            );
+//        }
+//    }
+//
     private void initListImportantFragment() {
         Toast.makeText(this, R.string.important, Toast.LENGTH_SHORT).show();
     }
@@ -243,19 +267,27 @@ public class MainActivity
         if (idFragment == R.id.nav_menu_important) {
             initListImportantFragment();
         } else if (idFragment == R.id.nav_menu_settings) {
-            navigation.addFragment(
-                    isLandscape ? R.id.fragment_root_container : R.id.fragment_main_container,
-                    new SettingsFragment(), null, true);
+            initSettingsFragment();
         } else if (idFragment == R.id.nav_menu_about) {
-            navigation.addFragment(
-                    isLandscape ? R.id.fragment_root_container : R.id.fragment_main_container,
-                    new AboutFragment(), null, true);
+            initAboutFragment();
         } else if (idFragment == R.id.nav_menu_home) {
             note = null;
             initListFragment();
         } else if (idFragment == R.id.header_view) {
             initSignInFragment(true);
         }
+    }
+
+    private void initAboutFragment() {
+        navigation.addFragment(
+                isLandscape ? R.id.fragment_root_container : R.id.fragment_main_container,
+                new AboutFragment(), null, true);
+    }
+
+    private void initSettingsFragment() {
+        navigation.addFragment(
+                isLandscape ? R.id.fragment_root_container : R.id.fragment_main_container,
+                new SettingsFragment(), null, true);
     }
 
     @Override
