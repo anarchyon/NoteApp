@@ -1,22 +1,29 @@
 package project.paveltoy.noteapp;
 
 import android.content.res.Configuration;
-import android.net.Uri;
 import android.os.Bundle;
-import android.os.Parcelable;
-import android.view.View;
 import android.widget.Toast;
 
 import com.google.android.material.bottomappbar.BottomAppBar;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
+import java.util.List;
+
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.LifecycleObserver;
-import androidx.lifecycle.Observer;
-import androidx.lifecycle.ViewModelProvider;
+import project.paveltoy.noteapp.Data.Note;
+import project.paveltoy.noteapp.UI.AboutFragment;
+import project.paveltoy.noteapp.UI.BottomNavigationDrawer;
+import project.paveltoy.noteapp.UI.CallbackContract;
+import project.paveltoy.noteapp.UI.FragmentObserver;
+import project.paveltoy.noteapp.UI.NoteFragment;
+import project.paveltoy.noteapp.UI.NoteListFragment;
+import project.paveltoy.noteapp.UI.OnBackPressedListener;
+import project.paveltoy.noteapp.UI.RootLandFragment;
+import project.paveltoy.noteapp.UI.SettingsFragment;
+import project.paveltoy.noteapp.UI.SignInFragment;
 
 public class MainActivity
         extends AppCompatActivity
@@ -33,9 +40,6 @@ public class MainActivity
     private Note note = null;
     private boolean isLandscape;
     private boolean isUserSignedIn = false;
-    private String userName = null;
-    private String userEmail = null;
-    private Uri userImage = null;
     private BottomAppBar bottomAppBar;
     private FloatingActionButton fab;
     private final LifecycleObserver noteFragmentObserver =
@@ -45,7 +49,8 @@ public class MainActivity
     private final LifecycleObserver signInFragmentObserver =
             new FragmentObserver(this::initBottomAppBarBySignInFragment);
 
-    private Fragment currentFragment;
+    private Fragment lastFragment;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,17 +61,30 @@ public class MainActivity
         initFragmentContainer();
         initBottomAppBar();
         loadStates(savedInstanceState);
-        if (isUserSignedIn) {
-            initListFragment();
-        } else {
-            initSignInFragment(false);
-        }
+//        if (checkLastFragment()) {
+//            initLastFragment();
+//        } else {
+            if (isUserSignedIn) {
+                initListFragment();
+            } else {
+                initSignInFragment(false);
+            }
+//        }
     }
-
-    private void loadFragment(Fragment currentFragment) {
-
-    }
-
+//
+//    private boolean checkLastFragment() {
+//        List<Fragment> fragments = navigation.getFragments();
+//        int bs = getSupportFragmentManager().getBackStackEntryCount();
+//        if (fragments.size() > 0) {
+//            Fragment fragment = fragments.get(fragments.size() - 1);
+//            if (!(fragment instanceof NoteFragment) && !(fragment instanceof NoteListFragment)) {
+//                lastFragment = fragment;
+//                return true;
+//            }
+//        }
+//        return false;
+//    }
+//
     private void initFragmentContainer() {
         isLandscape = getResources().getConfiguration().orientation
                 == Configuration.ORIENTATION_LANDSCAPE;
@@ -121,7 +139,7 @@ public class MainActivity
         signInFragment.getLifecycle().addObserver(signInFragmentObserver);
         navigation.addFragment(
                 isLandscape ? R.id.fragment_root_container : R.id.fragment_main_container,
-                signInFragment, null, addToBackStack
+                signInFragment, SignInFragment.TAG, addToBackStack
         );
     }
 
@@ -137,6 +155,16 @@ public class MainActivity
         if (note != null) showNote(note);
     }
 
+//    private void initLastFragment() {
+//        navigation.clearBackStack();
+//        if (lastFragment != null) {
+//            navigation.moveFragmentToAnotherContainer(
+//                    isLandscape ? R.id.fragment_root_container : R.id.fragment_main_container,
+//                    lastFragment, SignInFragment.TAG, true
+//            );
+//        }
+//    }
+//
     private void initListImportantFragment() {
         Toast.makeText(this, R.string.important, Toast.LENGTH_SHORT).show();
     }
@@ -159,7 +187,6 @@ public class MainActivity
         super.onSaveInstanceState(outState);
         outState.putParcelable(KEY_NOTE, note);
         outState.putBoolean(KEY_USER_SIGN_STATUS, isUserSignedIn);
-
     }
 
     @Override
@@ -205,17 +232,34 @@ public class MainActivity
 
     @Override
     public void onBackPressed() {
+        OnBackPressedListener onBackPressedListener = null;
+        List<Fragment> fragments = navigation.getFragments();
+        for (Fragment fragment : fragments) {
+            if (fragment instanceof OnBackPressedListener) {
+                onBackPressedListener = (OnBackPressedListener) fragment;
+                break;
+            }
+        }
+        if (onBackPressedListener != null) {
+            onBackPressedListener.onBackPressed();
+        } else {
+            launchSuperBackPressed();
+        }
+    }
+
+    public void launchSuperBackPressed() {
         NoteFragment noteFragment = (NoteFragment) getFragmentByTag(NoteFragment.TAG);
         if (noteFragment != null && noteFragment.isVisible()) {
             note = null;
         }
-        super.onBackPressed();
+
         if (isLandscape) {
             int backStackEntryCount = getSupportFragmentManager().getBackStackEntryCount();
             if (backStackEntryCount == 0 || (noteFragment != null && backStackEntryCount == 1)) {
                 initListFragment();
             }
         }
+        super.onBackPressed();
     }
 
     @Override
@@ -223,13 +267,9 @@ public class MainActivity
         if (idFragment == R.id.nav_menu_important) {
             initListImportantFragment();
         } else if (idFragment == R.id.nav_menu_settings) {
-            navigation.addFragment(
-                    isLandscape ? R.id.fragment_root_container : R.id.fragment_main_container,
-                    new SettingsFragment(), null, true);
+            initSettingsFragment();
         } else if (idFragment == R.id.nav_menu_about) {
-            navigation.addFragment(
-                    isLandscape ? R.id.fragment_root_container : R.id.fragment_main_container,
-                    new AboutFragment(), null, true);
+            initAboutFragment();
         } else if (idFragment == R.id.nav_menu_home) {
             note = null;
             initListFragment();
@@ -238,33 +278,27 @@ public class MainActivity
         }
     }
 
+    private void initAboutFragment() {
+        navigation.addFragment(
+                isLandscape ? R.id.fragment_root_container : R.id.fragment_main_container,
+                new AboutFragment(), null, true);
+    }
+
+    private void initSettingsFragment() {
+        navigation.addFragment(
+                isLandscape ? R.id.fragment_root_container : R.id.fragment_main_container,
+                new SettingsFragment(), null, true);
+    }
+
     @Override
-    public void signedIn(String accountName, String accountEmail, Uri accountImage) {
+    public void signedIn() {
         isUserSignedIn = true;
-        userName = accountName;
-        userEmail = accountEmail;
-        userImage = accountImage;
         initListFragment();
     }
 
     @Override
     public void signedOut() {
         isUserSignedIn = false;
-        userName = null;
-        userEmail = null;
-        userImage = null;
         initSignInFragment(false);
-    }
-
-    public String getUserName() {
-        return userName;
-    }
-
-    public String getUserEmail() {
-        return userEmail;
-    }
-
-    public Uri getUserImage() {
-        return userImage;
     }
 }

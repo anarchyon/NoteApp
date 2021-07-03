@@ -28,4 +28,14 @@
     <string name="continue_button">Продолжить</string>
     <string name="sign_out_button_text">Выйти</string>
     <string name="sign_in_button_text">Войти</string>
+    <string name="snackbar_delete_note">Заметка удалена</string>
+    <string name="snackbar_action_undo">Отмена</string>
+    <string name="alert_dialog_not_saved_note">Вы собираетесь закрыть не сохраненную заметку?</string>
+    <string name="alert_dialog_close_with_save">Закрыть и сохранить</string>
+    <string name="alert_dialog_close_not_save">Закрыть без сохранения</string>
+    <string name="dialog_close_title_contains">Предупреждение!</string>
+    <string name="dialog_close_text_contains">Вы изменили заметку и закрываете ее без сохранения.</string>
+    <string name="button_cancel_text">Отмена</string>
+    <string name="dialog_close_button_close_without_save_text">Закрыть без сохранения</string>
+    <string name="dialog_close_button_save_and_close">Сохранить и закрыть</string>
 </resources>

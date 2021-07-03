@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:padding="@dimen/primary_margin_and_padding"
-    tools:context=".NoteFragment">
+    tools:context=".UI.NoteFragment">
 
     <androidx.appcompat.widget.AppCompatEditText
         android:id="@+id/subject_note"
@@ -38,8 +38,8 @@
 
     <androidx.appcompat.widget.AppCompatToggleButton
         android:id="@+id/toggle_important"
-        android:layout_width="48dp"
-        android:layout_height="48dp"
+        android:layout_width="@dimen/important_label_size"
+        android:layout_height="@dimen/important_label_size"
         android:background="@drawable/toggle_button"
         android:textOff=""
         android:textOn=""

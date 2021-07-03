@@ -5,6 +5,9 @@ import android.widget.Filter;
 import java.util.ArrayList;
 import java.util.List;
 
+import project.paveltoy.noteapp.Data.Note;
+import project.paveltoy.noteapp.UI.NoteAdapter;
+
 public class TextFilter extends Filter {
     private final NoteAdapter adapter;
     private final List<Note> originalList;

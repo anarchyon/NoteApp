@@ -29,8 +29,8 @@
 
         <androidx.appcompat.widget.AppCompatImageView
             android:id="@+id/item_note_is_important"
-            android:layout_width="12dp"
-            android:layout_height="12dp"
+            android:layout_width="@dimen/important_label_size_in_item_land"
+            android:layout_height="@dimen/important_label_size_in_item_land"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintBottom_toBottomOf="parent" />
 
