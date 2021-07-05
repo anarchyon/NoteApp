@@ -1,4 +1,4 @@
-package project.paveltoy.noteapp.UI;
+package project.paveltoy.noteapp.ui;
 
 public interface OnBackPressedListener {
     void onBackPressed();

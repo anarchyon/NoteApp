@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:padding="@dimen/primary_margin_and_padding"
-    tools:context=".UI.NoteFragment">
+    tools:context=".ui.NoteFragment">
 
     <androidx.appcompat.widget.AppCompatEditText
         android:id="@+id/subject_note"

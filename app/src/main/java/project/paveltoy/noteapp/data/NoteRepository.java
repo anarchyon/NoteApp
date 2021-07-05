@@ -1,6 +1,6 @@
-package project.paveltoy.noteapp.Data;
+package project.paveltoy.noteapp.data;
 
-import project.paveltoy.noteapp.UI.NoteSourceCallback;
+import project.paveltoy.noteapp.ui.NoteSourceCallback;
 
 public interface NoteRepository {
     NoteRepository init(NoteSourceCallback noteSourceCallback);

@@ -1,4 +1,4 @@
-package project.paveltoy.noteapp.UI;
+package project.paveltoy.noteapp.ui;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -21,7 +21,7 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import project.paveltoy.noteapp.Data.FirebaseAccountOpenData;
+import project.paveltoy.noteapp.data.FirebaseAccountOpenData;
 import project.paveltoy.noteapp.R;
 
 import java.util.Arrays;

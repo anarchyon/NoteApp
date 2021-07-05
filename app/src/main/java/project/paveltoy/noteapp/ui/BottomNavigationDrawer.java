@@ -1,4 +1,4 @@
-package project.paveltoy.noteapp.UI;
+package project.paveltoy.noteapp.ui;
 
 import android.app.Dialog;
 import android.content.Context;
@@ -17,7 +17,7 @@ import com.google.android.material.navigation.NavigationView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import project.paveltoy.noteapp.Data.FirebaseAccountOpenData;
+import project.paveltoy.noteapp.data.FirebaseAccountOpenData;
 import project.paveltoy.noteapp.R;
 
 public class BottomNavigationDrawer extends BottomSheetDialogFragment {

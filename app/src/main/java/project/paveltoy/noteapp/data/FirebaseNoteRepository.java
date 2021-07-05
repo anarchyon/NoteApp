@@ -1,4 +1,4 @@
-package project.paveltoy.noteapp.Data;
+package project.paveltoy.noteapp.data;
 
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -11,7 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import project.paveltoy.noteapp.UI.NoteSourceCallback;
+import project.paveltoy.noteapp.ui.NoteSourceCallback;
 
 public class FirebaseNoteRepository implements NoteRepository {
     private final FirebaseFirestore db;

@@ -1,4 +1,4 @@
-package project.paveltoy.noteapp.UI;
+package project.paveltoy.noteapp.ui;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;

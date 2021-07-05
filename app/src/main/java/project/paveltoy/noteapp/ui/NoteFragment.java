@@ -1,4 +1,4 @@
-package project.paveltoy.noteapp.UI;
+package project.paveltoy.noteapp.ui;
 
 import android.content.Context;
 import android.os.Bundle;
@@ -8,7 +8,7 @@ import androidx.appcompat.widget.AppCompatEditText;
 import androidx.appcompat.widget.AppCompatTextView;
 import androidx.appcompat.widget.AppCompatToggleButton;
 import androidx.fragment.app.Fragment;
-import project.paveltoy.noteapp.Data.Note;
+import project.paveltoy.noteapp.data.Note;
 import project.paveltoy.noteapp.R;
 
 import android.text.Editable;
@@ -105,7 +105,7 @@ public class NoteFragment extends Fragment
                 note == null ? null : note.getId(),
                 subject,
                 text,
-                note == null ? Note.getCurrentDate() : note.getCreationDate(),
+                note == null ? Note.Companion.getCurrentDate() : note.getCreationDate(),
                 isImportant.isChecked() ? Note.NOTE_IMPORTANT : Note.NOTE_NOT_IMPORTANT
         );
     }
@@ -124,7 +124,7 @@ public class NoteFragment extends Fragment
         String dateString = new SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.getDefault())
                 .format(note.getCreationDate());
         creationDate.setText(dateString);
-        if (note.getIsImportant() != 0) {
+        if (note.isImportant() != 0) {
             isImportant.setChecked(true);
         }
     }
