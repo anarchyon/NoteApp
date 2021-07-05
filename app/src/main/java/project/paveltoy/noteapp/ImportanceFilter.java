@@ -5,8 +5,8 @@ import android.widget.Filter;
 import java.util.ArrayList;
 import java.util.List;
 
-import project.paveltoy.noteapp.Data.Note;
-import project.paveltoy.noteapp.UI.NoteAdapter;
+import project.paveltoy.noteapp.data.Note;
+import project.paveltoy.noteapp.ui.NoteAdapter;
 
 public class ImportanceFilter extends Filter {
     private final NoteAdapter adapter;

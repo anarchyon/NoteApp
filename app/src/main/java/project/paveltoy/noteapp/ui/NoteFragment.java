@@ -1,4 +1,4 @@
-package project.paveltoy.noteapp.UI;
+package project.paveltoy.noteapp.ui;
 
 import android.content.Context;
 import android.os.Bundle;
@@ -8,7 +8,7 @@ import androidx.appcompat.widget.AppCompatEditText;
 import androidx.appcompat.widget.AppCompatTextView;
 import androidx.appcompat.widget.AppCompatToggleButton;
 import androidx.fragment.app.Fragment;
-import project.paveltoy.noteapp.Data.Note;
+import project.paveltoy.noteapp.data.Note;
 import project.paveltoy.noteapp.R;
 
 import android.text.Editable;

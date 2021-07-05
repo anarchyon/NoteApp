@@ -13,17 +13,17 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.LifecycleObserver;
-import project.paveltoy.noteapp.Data.Note;
-import project.paveltoy.noteapp.UI.AboutFragment;
-import project.paveltoy.noteapp.UI.BottomNavigationDrawer;
-import project.paveltoy.noteapp.UI.CallbackContract;
-import project.paveltoy.noteapp.UI.FragmentObserver;
-import project.paveltoy.noteapp.UI.NoteFragment;
-import project.paveltoy.noteapp.UI.NoteListFragment;
-import project.paveltoy.noteapp.UI.OnBackPressedListener;
-import project.paveltoy.noteapp.UI.RootLandFragment;
-import project.paveltoy.noteapp.UI.SettingsFragment;
-import project.paveltoy.noteapp.UI.SignInFragment;
+import project.paveltoy.noteapp.data.Note;
+import project.paveltoy.noteapp.ui.AboutFragment;
+import project.paveltoy.noteapp.ui.BottomNavigationDrawer;
+import project.paveltoy.noteapp.ui.CallbackContract;
+import project.paveltoy.noteapp.ui.FragmentObserver;
+import project.paveltoy.noteapp.ui.NoteFragment;
+import project.paveltoy.noteapp.ui.NoteListFragment;
+import project.paveltoy.noteapp.ui.OnBackPressedListener;
+import project.paveltoy.noteapp.ui.RootLandFragment;
+import project.paveltoy.noteapp.ui.SettingsFragment;
+import project.paveltoy.noteapp.ui.SignInFragment;
 
 public class MainActivity
         extends AppCompatActivity

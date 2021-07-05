@@ -1,4 +1,4 @@
-package project.paveltoy.noteapp.Data;
+package project.paveltoy.noteapp.data;
 
 import com.google.firebase.Timestamp;
 

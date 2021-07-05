@@ -1,4 +1,4 @@
-package project.paveltoy.noteapp.UI;
+package project.paveltoy.noteapp.ui;
 
 import android.view.View;
 
@@ -10,7 +10,7 @@ import androidx.appcompat.widget.AppCompatImageView;
 import androidx.appcompat.widget.AppCompatTextView;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.RecyclerView;
-import project.paveltoy.noteapp.Data.Note;
+import project.paveltoy.noteapp.data.Note;
 import project.paveltoy.noteapp.R;
 
 public class NoteViewHolder extends RecyclerView.ViewHolder {

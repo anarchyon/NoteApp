@@ -1,6 +1,6 @@
-package project.paveltoy.noteapp.UI;
+package project.paveltoy.noteapp.ui;
 
-import project.paveltoy.noteapp.Data.Note;
+import project.paveltoy.noteapp.data.Note;
 
 public interface CallbackContract {
     void saveNote(Note note);
