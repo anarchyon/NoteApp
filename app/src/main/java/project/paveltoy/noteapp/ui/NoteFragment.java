@@ -105,7 +105,7 @@ public class NoteFragment extends Fragment
                 note == null ? null : note.getId(),
                 subject,
                 text,
-                note == null ? Note.getCurrentDate() : note.getCreationDate(),
+                note == null ? Note.Companion.getCurrentDate() : note.getCreationDate(),
                 isImportant.isChecked() ? Note.NOTE_IMPORTANT : Note.NOTE_NOT_IMPORTANT
         );
     }
@@ -124,7 +124,7 @@ public class NoteFragment extends Fragment
         String dateString = new SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.getDefault())
                 .format(note.getCreationDate());
         creationDate.setText(dateString);
-        if (note.getIsImportant() != 0) {
+        if (note.isImportant() != 0) {
             isImportant.setChecked(true);
         }
     }

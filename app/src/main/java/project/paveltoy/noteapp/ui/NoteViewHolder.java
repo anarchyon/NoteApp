@@ -50,7 +50,7 @@ public class NoteViewHolder extends RecyclerView.ViewHolder {
         String dateString = new SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.getDefault())
                 .format(note.getCreationDate());
         date.setText(dateString);
-        if (note.getIsImportant() != 0) {
+        if (note.isImportant() != 0) {
             isImportant.setImageResource(R.drawable.ic_btn_toggle_on_24);
         } else {
             isImportant.setImageDrawable(null);

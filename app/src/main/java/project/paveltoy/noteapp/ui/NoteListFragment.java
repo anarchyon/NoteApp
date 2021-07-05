@@ -111,7 +111,7 @@ public class NoteListFragment extends Fragment implements CallbackContract {
         MenuInflater inflater = requireActivity().getMenuInflater();
         inflater.inflate(R.menu.context_menu, menu);
         Note newNote = notes.getNote(adapter.getItemPosition());
-        if (newNote.getIsImportant() == 0) {
+        if (newNote.isImportant() == 0) {
             menu.removeItem(R.id.menu_context_set_not_important);
         } else {
             menu.removeItem(R.id.menu_context_set_important);
@@ -128,11 +128,11 @@ public class NoteListFragment extends Fragment implements CallbackContract {
             getContract().showReceivedNote(notes.getNote(itemPosition));
         } else if (itemId == R.id.menu_context_set_important) {
             Note note = notes.getNote(itemPosition);
-            note.setIsImportant(Note.NOTE_IMPORTANT);
+            note.setImportant(Note.NOTE_IMPORTANT);
             editNote(itemPosition, note);
         } else if (itemId == R.id.menu_context_set_not_important) {
             Note note = notes.getNote(itemPosition);
-            note.setIsImportant(Note.NOTE_NOT_IMPORTANT);
+            note.setImportant(Note.NOTE_NOT_IMPORTANT);
             editNote(itemPosition, note);
         }
         return super.onContextItemSelected(item);

@@ -24,7 +24,7 @@ public class NoteMapping {
         document.put(Fields.CREATION_DATE, note.getCreationDate());
         document.put(Fields.SUBJECT, note.getSubject());
         document.put(Fields.TEXT, note.getText());
-        boolean isImportant = note.getIsImportant() != 0;
+        boolean isImportant = note.isImportant() != 0;
         document.put(Fields.IMPORTANT, isImportant);
         return document;
     }
